@@ -1,69 +1,69 @@
 # WaitLess
-WaitLess -  know the crowd. Predict the wait. Choose better 
 
+**Know the crowd. Predict the wait. Choose better.**
 
-# WaitLess — UI/UX Design System & Prototype
+WaitLess is a real-time crowd intelligence application. It turns one-tap crowd reports into real-time wait predictions, so people can choose better and businesses see their footfall clearly across hospitality, finance, retail, and entertainment sectors.
 
-Real-time crowd intelligence app. Know the crowd. Predict the wait. Choose better.
+This repository contains the full WaitLess prototype implementation, built as a modern Progressive Web App (PWA) with a dedicated backend. 
 
-This repo contains a **clickable HTML/CSS/JS prototype** (no build step, no dependencies) covering only the **MUST-have** features for the college round: one-tap crowd report, live crowd list, estimated wait, best-time recommendation, smart alternative, and confidence score.
+## Project Structure
 
-## View it
+This project is structured as a monorepo:
 
-**Locally:** open `index.html` in any browser.
-
-**On GitHub Pages:**
-1. Push this repo to GitHub.
-2. Go to `Settings → Pages → Deploy from a branch`, pick `main` and `/root`.
-3. Your live design system + prototype will be at `https://<username>.github.io/<repo>/`.
-
-## Structure
-
-```
-waitless-uiux/
-├── index.html          # Design system page + clickable prototype
-├── css/style.css        # All design tokens & component styles
-├── js/app.js             # Screen-switching logic for the prototype
-├── assets/logo.svg       # Logo mark (light/dark/lockup all built from this one file)
-└── README.md
+```text
+WaitLess/
+├── client/          # Vite + React PWA Frontend
+│   ├── public/      # Static assets (favicons, manifest icons)
+│   ├── src/         # React components, styles, and core logic
+│   └── vite.config.js # Vite & PWA plugin configuration
+├── server/          # Express.js Backend API
+│   ├── app.js       # Main server entry point & routes
+│   └── package.json
+└── README.md        # Project documentation
 ```
 
-## Brand
+## Tech Stack
 
-**Logo:** an hourglass built from two triangles, crossed by a live pulse line — reads as "time" and "live data" at once. The lower triangle is a lighter tint, like sand running low. Works as a single icon or a horizontal lockup with the wordmark.
+- **Frontend:** React 19, Vite, Vite PWA Plugin, Vanilla CSS (Design System Tokens).
+- **Backend:** Node.js, Express.js, CORS.
+- **Design System:** 
+  - *Typography:* Space Grotesk (Display), Inter (Body), JetBrains Mono (Data/Metrics).
+  - *Colors:* Deep Indigo (`#181233`), Violet (`#6C3CE9`), Pulse Cyan (`#12D6C4`).
 
-**Colour system**
+## Getting Started
 
-| Token | Hex | Use |
-|---|---|---|
-| Ink | `#181233` | Dark surfaces, primary text on light |
-| Violet | `#6C3CE9` | Primary brand, CTAs |
-| Violet 600 | `#4B2AAD` | Gradients, pressed states |
-| Pulse Cyan | `#12D6C4` | Live indicators, accents |
-| Mist | `#F6F5FB` | App background |
-| Crowd — Low | `#22B573` | Fixed meaning everywhere |
-| Crowd — Medium | `#F5A623` | Fixed meaning everywhere |
-| Crowd — High | `#E5484D` | Fixed meaning everywhere |
+To run the full application locally, you will need to start both the backend server and the frontend development server.
 
-Crowd colours never change role — green/amber/red mean the same thing on every screen, in every component.
+### 1. Start the Backend Server
 
-**Typography**
-- `Space Grotesk` (600) — display / headings / logo wordmark
-- `Inter` (400–600) — all body copy and UI text
-- `JetBrains Mono` (500) — anything measured: wait ranges, confidence %, timestamps
+Open a terminal and run the following:
 
-## Screens in the prototype
+```bash
+cd server
+npm install
+npm run dev
+```
+*The Express server will start on `http://localhost:5000` with hot-reloading via nodemon.*
 
-1. **Splash** — logo, tagline, entry point
-2. **Home** — search + 4 sector categories (hospitality, finance, retail, entertainment) + nearby preview
-3. **Nearby list** — every card shows crowd badge + wait + confidence + "updated Xm ago"
-4. **Place details** — estimated wait range, confidence, best-time-today, smart lower-wait alternative, one-tap report CTA
-5. **Report crowd** — single-tap Low / Medium / High bottom sheet; submitting shows a live toast update on the nearby list
+### 2. Start the Frontend PWA
 
-## Design rule this system enforces
+Open a second terminal and run:
 
-Every place, on every screen, always shows **crowd level + estimated wait + confidence** together — never estimated wait in isolation. This is the one rule the whole UI is built around.
+```bash
+cd client
+npm install
+npm run dev
+```
+*The Vite React server will start on `http://localhost:5173`. Any API requests made to `/api` from the client are automatically proxied to the backend server running on port 5000.*
 
-## Out of scope (by design)
+## Core Features & Screens
 
-Login/signup, points/badges/leaderboard, business dashboard, notifications, and full map view are intentionally not built — this prototype covers only the features marked `MUST` for the college selection round.
+1. **Splash Screen** — Entry point with the WaitLess brand and tagline.
+2. **Home** — Search functionality, browse by sector (hospitality, finance, retail, entertainment), and view live nearby previews.
+3. **Nearby List** — View places with live crowd badges, estimated wait times, and confidence scores.
+4. **Place Details** — Get deep insights on estimated wait ranges, best-time-to-visit, and a smart lower-wait alternative recommendation.
+5. **Report Crowd** — One-tap reporting interface to submit live crowd levels (Low / Medium / High), instantly updating the global live data status.
+
+## Core Design Philosophy
+
+Every location, on every screen, must always display **crowd level + estimated wait + confidence** together — never just an estimated wait in isolation. This is the singular rule the whole UI is built around, ensuring users always have context for the wait time prediction.

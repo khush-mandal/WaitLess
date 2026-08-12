@@ -1,0 +1,28 @@
+{
+  "name": "waitless",
+  "version": "1.0.0",
+  "description": "WaitLess -  know the crowd. Predict the wait. Choose better",
+  "main": "index.js",
+  "scripts": {
+    "dev:client": "npm run dev --prefix client",
+    "dev:server": "npm run dev --prefix server",
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "install:all": "npm install && npm install --prefix client && npm install --prefix server",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/khush-mandal/WaitLess.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/khush-mandal/WaitLess/issues"
+  },
+  "homepage": "https://github.com/khush-mandal/WaitLess#readme",
+  "devDependencies": {
+    "concurrently": "^10.0.4"
+  }
+}
