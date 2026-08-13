@@ -1,66 +1,246 @@
-import { useState, useEffect } from 'react';
-import SplashScreen from './components/SplashScreen';
-import HomeScreen from './components/HomeScreen';
-import NearbyScreen from './components/NearbyScreen';
-import DetailsScreen from './components/DetailsScreen';
-import ReportScreen from './components/ReportScreen';
-
-function App() {
-  const [currentScreen, setCurrentScreen] = useState('splash');
-  const [isReporting, setIsReporting] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-  const [serverStatus, setServerStatus] = useState('Checking server...');
-
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+import { useState, useEffect } from "react";
+import { INITIAL_PLACES, INITIAL_REPORTS, INITIAL_USER_PROFILE } from "./data/initialData";
+import { Header } from "./components/Header";
+import { BottomNav } from "./components/BottomNav";
+import { ExploreView } from "./components/ExploreView";
+import { MapView } from "./components/MapView";
+import { PlaceDetailsView } from "./components/PlaceDetailsView";
+import { ReportModal } from "./components/ReportModal";
+import { ReportsView } from "./components/ReportsView";
+import { PatternsView } from "./components/PatternsView";
+import { ProfileView } from "./components/ProfileView";
+export default function App() {
+  const [places, setPlaces] = useState(() => {
+    const saved = localStorage.getItem("waitless_places");
+    return saved ? JSON.parse(saved) : INITIAL_PLACES;
+  });
+  const [userProfile, setUserProfile] = useState(() => {
+    const saved = localStorage.getItem("waitless_user_profile");
+    return saved ? JSON.parse(saved) : INITIAL_USER_PROFILE;
+  });
+  const [userReports, setUserReports] = useState(() => {
+    const saved = localStorage.getItem("waitless_user_reports");
+    return saved ? JSON.parse(saved) : INITIAL_REPORTS;
+  });
+  const [activeTab, setActiveTab] = useState("explore");
+  const [isMapView, setIsMapView] = useState(false);
+  const [selectedPlace, setSelectedPlace] = useState(null);
+  const [selectedSector, setSelectedSector] = useState("all");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false);
+  const [reportTargetPlaceId, setReportTargetPlaceId] = useState(void 0);
+  const [unreadNotifications, setUnreadNotifications] = useState(true);
+  const [showNotificationToast, setShowNotificationToast] = useState(false);
+  const [serverStatus, setServerStatus] = useState("Checking server...");
+  const [showServerStatus, setShowServerStatus] = useState(true);
   useEffect(() => {
     fetch('/api/health')
       .then(res => res.json())
       .then(data => setServerStatus(`Server Connected: ${data.message}`))
-      .catch(err => setServerStatus('Server Disconnected'));
+      .catch(err => setServerStatus('Server Disconnected'))
+      .finally(() => {
+        setTimeout(() => setShowServerStatus(false), 5000);
+      });
   }, []);
-
-  const handleNavigate = (screen) => {
-    setCurrentScreen(screen);
-    window.scrollTo(0, 0);
-  };
-
-  const handleReport = () => {
-    setIsReporting(true);
-  };
-
-  const handleCloseReport = () => {
-    setIsReporting(false);
-  };
-
-  const handleSubmitReport = (mood) => {
-    setIsReporting(false);
-    handleNavigate('nearby');
-    setShowToast(true);
-  };
-
   useEffect(() => {
-    if (showToast) {
-      const timer = setTimeout(() => {
-        setShowToast(false);
-      }, 2600);
-      return () => clearTimeout(timer);
-    }
-  }, [showToast]);
+    localStorage.setItem("waitless_places", JSON.stringify(places));
+  }, [places]);
+  useEffect(() => {
+    localStorage.setItem("waitless_user_profile", JSON.stringify(userProfile));
+  }, [userProfile]);
+  useEffect(() => {
+    localStorage.setItem("waitless_user_reports", JSON.stringify(userReports));
+  }, [userReports]);
+  const handleSubmitReport = (placeId, level) => {
+    const pointsToAdd = level === "medium" ? 15 : 10;
+    setPlaces(
+      (prevPlaces) => prevPlaces.map((p) => {
+        if (p.id === placeId) {
+          let label = "Not Busy";
+          let waitMin = 0;
+          if (level === "high") {
+            label = "Very Busy";
+            waitMin = 45;
+          } else if (level === "medium") {
+            label = "Moderate";
+            waitMin = 15;
+          } else if (level === "low") {
+            label = "Not Busy";
+            waitMin = 5;
+          }
+          return {
+            ...p,
+            crowdLevel: level,
+            statusLabel: label,
+            currentWaitMin: waitMin,
+            confidence: Math.min(100, p.confidence + 5),
+            reportsCount: p.reportsCount + 1
+          };
+        }
+        return p;
+      })
+    );
+    const targetPlace = places.find((p) => p.id === placeId);
+    const placeName = targetPlace ? targetPlace.name : "Local Venue";
+    const newReport = {
+      id: `rep-${Date.now()}`,
+      placeId,
+      placeName,
+      sector: targetPlace ? targetPlace.sector : "hospitality",
+      crowdLevel: level,
+      timestamp: "Just now",
+      pointsEarned: pointsToAdd,
+      iconName: targetPlace?.sector === "retail" ? "shopping_cart" : "storefront"
+    };
+    setUserReports((prev) => [newReport, ...prev]);
+    setUserProfile((prev) => ({
+      ...prev,
+      totalPoints: prev.totalPoints + pointsToAdd,
+      weeklyPoints: prev.weeklyPoints + pointsToAdd,
+      reportsThisWeek: prev.reportsThisWeek + 1,
+      totalReports: prev.totalReports + 1,
+      peopleHelped: prev.peopleHelped + 45,
+      impactScore: Math.min(100, prev.impactScore + 1)
+    }));
+  };
+  const handleOpenReportModal = (placeId) => {
+    setReportTargetPlaceId(placeId);
+    setIsReportModalOpen(true);
+  };
+  const handleResetStats = () => {
+    setPlaces(INITIAL_PLACES);
+    setUserProfile(INITIAL_USER_PROFILE);
+    setUserReports(INITIAL_REPORTS);
+    localStorage.removeItem("waitless_places");
+    localStorage.removeItem("waitless_user_profile");
+    localStorage.removeItem("waitless_user_reports");
+  };
+  return <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
+      {showServerStatus && (
+        <div style={{ background: serverStatus.includes('Connected') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
+          {serverStatus}
+        </div>
+      )}
+      {
+    /* Top Header */
+  }
+      <Header
+    activeTab={activeTab}
+    setActiveTab={(tab) => {
+      setActiveTab(tab);
+      setSelectedPlace(null);
+    }}
+    isMapView={isMapView}
+    setIsMapView={(map) => {
+      setIsMapView(map);
+      if (map) setActiveTab("explore");
+    }}
+    unreadNotifications={unreadNotifications}
+    onNotificationClick={() => {
+      setUnreadNotifications(false);
+      setShowNotificationToast(true);
+    }}
+  />
 
-  return (
-    <>
-      <div style={{ background: serverStatus.includes('Connected') ? 'var(--low)' : 'var(--high)', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000 }}>
-        {serverStatus}
+      {
+    /* Main View Area */
+  }
+      <div className="flex-1">
+        {
+    /* If a place detail is opened */
+  }
+        {selectedPlace ? <PlaceDetailsView
+    place={selectedPlace}
+    allPlaces={places}
+    onBack={() => setSelectedPlace(null)}
+    onSelectPlace={(place) => setSelectedPlace(place)}
+    onOpenReportModal={(placeId) => handleOpenReportModal(placeId)}
+  /> : activeTab === "explore" ? isMapView ? <MapView
+    places={places}
+    onSelectPlace={(place) => setSelectedPlace(place)}
+    selectedSector={selectedSector}
+    setSelectedSector={setSelectedSector}
+    searchQuery={searchQuery}
+    setSearchQuery={setSearchQuery}
+    onOpenReportModal={(placeId) => handleOpenReportModal(placeId)}
+  /> : <ExploreView
+    places={places}
+    userProfile={userProfile}
+    selectedSector={selectedSector}
+    setSelectedSector={setSelectedSector}
+    searchQuery={searchQuery}
+    setSearchQuery={setSearchQuery}
+    onSelectPlace={(place) => setSelectedPlace(place)}
+    onOpenReportModal={(placeId) => handleOpenReportModal(placeId)}
+    onNavigateToReports={() => setActiveTab("reports")}
+  /> : activeTab === "reports" ? <ReportsView
+    userProfile={userProfile}
+    userReports={userReports}
+    onOpenReportModal={() => handleOpenReportModal()}
+  /> : activeTab === "patterns" ? <PatternsView /> : activeTab === "profile" ? <ProfileView
+    userProfile={userProfile}
+    onResetStats={handleResetStats}
+  /> : null}
       </div>
-      <div style={{ paddingTop: '20px' }}>
-        {currentScreen === 'splash' && <SplashScreen onStart={() => handleNavigate('home')} />}
-      {currentScreen === 'home' && <HomeScreen onNavigate={handleNavigate} />}
-      {currentScreen === 'nearby' && <NearbyScreen onNavigate={handleNavigate} showToast={showToast} />}
-      {currentScreen === 'details' && <DetailsScreen onNavigate={handleNavigate} onReport={handleReport} />}
-      
-      {isReporting && <ReportScreen onClose={handleCloseReport} onSubmitReport={handleSubmitReport} />}
-      </div>
-    </>
-  );
+
+      {
+    /* Mobile Bottom Navigation */
+  }
+      {!selectedPlace && <BottomNav
+    activeTab={activeTab}
+    setActiveTab={(tab) => {
+      setActiveTab(tab);
+      setSelectedPlace(null);
+    }}
+    setIsMapView={setIsMapView}
+  />}
+
+      {
+    /* Report Modal */
+  }
+      <ReportModal
+    isOpen={isReportModalOpen}
+    onClose={() => setIsReportModalOpen(false)}
+    places={places}
+    preselectedPlaceId={reportTargetPlaceId}
+    onSubmitReport={handleSubmitReport}
+  />
+
+      {
+    /* Notifications Toast */
+  }
+      {showNotificationToast && <div className="fixed top-20 right-4 z-50 max-w-sm w-full glass-card rounded-2xl p-4 shadow-2xl border border-white/60 animate-slide-up">
+          <div className="flex justify-between items-start mb-2">
+            <div className="flex items-center gap-2 text-[#00342b] font-bold text-sm">
+              <span className="material-symbols-outlined text-[18px]">notifications_active</span>
+              WaitLess Alerts
+            </div>
+            <button
+    onClick={() => setShowNotificationToast(false)}
+    className="text-[#707975] hover:text-[#191c1b] p-1"
+  >
+              <span className="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+          <p className="text-xs text-[#3f4945] font-medium leading-relaxed">
+            ⚡ <strong>The Roasted Bean</strong> is currently <strong>Not Busy (0m wait)</strong>! Great time to grab coffee nearby.
+          </p>
+          <div className="mt-3 flex justify-end gap-2">
+            <button
+    onClick={() => {
+      setShowNotificationToast(false);
+      const place = places.find((p) => p.name.includes("Roasted"));
+      if (place) setSelectedPlace(place);
+    }}
+    className="px-3 py-1.5 bg-[#004d40] text-white text-xs font-bold rounded-lg hover:bg-[#00342b] transition-all"
+  >
+              View Spot
+            </button>
+          </div>
+        </div>}
+    </div>;
 }
-
-export default App;
