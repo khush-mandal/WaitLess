@@ -9,6 +9,17 @@ export const ExploreView = ({
   onOpenReportModal,
   onNavigateToReports
 }) => {
+  const formatTimeAgo = (timestamp) => {
+    if (!timestamp) return 'Updated recently';
+    const diff = Date.now() - timestamp;
+    const minutes = Math.floor(diff / 60000);
+    if (minutes < 1) return 'Updated just now';
+    if (minutes < 60) return `Updated ${minutes}m ago`;
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return `Updated ${hours}h ago`;
+    return `Updated ${Math.floor(hours / 24)}d ago`;
+  };
+
   const filteredPlaces = places.filter((place) => {
     const matchesSector = selectedSector === "all" || place.sector === selectedSector;
     const matchesQuery = searchQuery === "" || place.name.toLowerCase().includes(searchQuery.toLowerCase()) || place.category.toLowerCase().includes(searchQuery.toLowerCase());
@@ -261,6 +272,21 @@ export const ExploreView = ({
                       <p className="text-xs text-[#3f4945] truncate font-medium mt-0.5">
                         {place.category}
                       </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-y-2 gap-x-1 mt-1">
+                      <div className="flex items-center gap-1.5 text-xs text-[#3f4945] font-medium">
+                        <span className="material-symbols-outlined text-[15px] text-[#004d40]">schedule</span>
+                        {place.currentWaitMin > 0 ? `~${place.currentWaitMin}m wait` : 'No wait'}
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#3f4945] font-medium">
+                        <span className="material-symbols-outlined text-[15px] text-[#004d40]">verified</span>
+                        {place.confidence}% Score
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-[#3f4945] font-medium col-span-2">
+                        <span className="material-symbols-outlined text-[15px] text-[#004d40]">update</span>
+                        {place.updatedAt ? formatTimeAgo(place.updatedAt) : 'Updated recently'}
+                      </div>
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-white/40">
