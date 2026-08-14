@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { recommendBestTime } from "../utils/bestTimeRecommendation";
 export const PlaceDetailsView = ({
   place,
   allPlaces,
@@ -14,6 +15,8 @@ export const PlaceDetailsView = ({
     setTimeout(() => setCopiedShare(false), 2e3);
   };
   const alternativePlace = place.smartAlternative ? allPlaces.find((p) => p.name.includes("Green") || p.id === place.smartAlternative?.id) : null;
+  const bestTimeRec = recommendBestTime(place.hourlyCrowd);
+
   return <div className="mesh-bg min-h-screen pt-20 pb-28 px-5">
       <div className="max-w-3xl mx-auto space-y-6">
         {
@@ -130,13 +133,21 @@ export const PlaceDetailsView = ({
     /* Crowd Patterns: Hourly Bar Chart */
   }
         <div className="glass-card rounded-2xl p-6 animate-slide-up delay-100">
-          <div className="flex justify-between items-start mb-2">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-3">
             <div>
               <h2 className="text-xl font-bold text-[#00342b]">Crowd by Hour</h2>
-              <p className="text-sm text-[#3f4945] mt-0.5">
-                Best Time:{" "}
-                <span className="font-bold text-[#4CAF50]">{place.bestHours || "3 PM - 4 PM"}</span>
-              </p>
+              <div className="mt-1 bg-[#4CAF50]/10 border border-[#4CAF50]/30 rounded-lg p-2.5 inline-block">
+                <p className="text-sm text-[#3f4945]">
+                  Best time to visit:{" "}
+                  <span className="font-bold text-[#4CAF50]">{bestTimeRec.recommendedTime}</span>
+                </p>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className={`material-symbols-outlined text-[14px] ${bestTimeRec.confidence === 'high' ? 'text-[#4CAF50]' : bestTimeRec.confidence === 'medium' ? 'text-[#FFC107]' : 'text-[#707975]'}`}>
+                    {bestTimeRec.confidence === 'high' ? 'verified' : bestTimeRec.confidence === 'medium' ? 'info' : 'help'}
+                  </span>
+                  <span className="text-[11px] text-[#707975] font-medium">{bestTimeRec.reason}</span>
+                </div>
+              </div>
             </div>
             <div className="flex gap-2 text-[10px] font-bold text-[#3f4945] uppercase">
               <span className="flex items-center gap-1">
