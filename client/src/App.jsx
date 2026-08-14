@@ -4,6 +4,7 @@
  */
 import { useState, useEffect } from "react";
 import { INITIAL_PLACES, INITIAL_REPORTS, INITIAL_USER_PROFILE } from "./data/initialData";
+import { estimateWaitTime } from "./utils/waitEstimation";
 import { Header } from "./components/Header";
 import { BottomNav } from "./components/BottomNav";
 import { ExploreView } from "./components/ExploreView";
@@ -15,15 +16,15 @@ import { PatternsView } from "./components/PatternsView";
 import { ProfileView } from "./components/ProfileView";
 export default function App() {
   const [places, setPlaces] = useState(() => {
-    const saved = localStorage.getItem("waitless_places");
+    const saved = localStorage.getItem("waitless_places_v2");
     return saved ? JSON.parse(saved) : INITIAL_PLACES;
   });
   const [userProfile, setUserProfile] = useState(() => {
-    const saved = localStorage.getItem("waitless_user_profile");
+    const saved = localStorage.getItem("waitless_user_profile_v2");
     return saved ? JSON.parse(saved) : INITIAL_USER_PROFILE;
   });
   const [userReports, setUserReports] = useState(() => {
-    const saved = localStorage.getItem("waitless_user_reports");
+    const saved = localStorage.getItem("waitless_user_reports_v2");
     return saved ? JSON.parse(saved) : INITIAL_REPORTS;
   });
   const [activeTab, setActiveTab] = useState("explore");
@@ -47,31 +48,20 @@ export default function App() {
       });
   }, []);
   useEffect(() => {
-    localStorage.setItem("waitless_places", JSON.stringify(places));
+    localStorage.setItem("waitless_places_v2", JSON.stringify(places));
   }, [places]);
   useEffect(() => {
-    localStorage.setItem("waitless_user_profile", JSON.stringify(userProfile));
+    localStorage.setItem("waitless_user_profile_v2", JSON.stringify(userProfile));
   }, [userProfile]);
   useEffect(() => {
-    localStorage.setItem("waitless_user_reports", JSON.stringify(userReports));
+    localStorage.setItem("waitless_user_reports_v2", JSON.stringify(userReports));
   }, [userReports]);
   const handleSubmitReport = (placeId, level) => {
     const pointsToAdd = level === "medium" ? 15 : 10;
     setPlaces(
       (prevPlaces) => prevPlaces.map((p) => {
         if (p.id === placeId) {
-          let label = "Not Busy";
-          let waitMin = 0;
-          if (level === "high") {
-            label = "Very Busy";
-            waitMin = 45;
-          } else if (level === "medium") {
-            label = "Moderate";
-            waitMin = 15;
-          } else if (level === "low") {
-            label = "Not Busy";
-            waitMin = 5;
-          }
+          const { waitMin, label } = estimateWaitTime(level, p.hourlyCrowd);
           return {
             ...p,
             crowdLevel: level,
@@ -115,9 +105,9 @@ export default function App() {
     setPlaces(INITIAL_PLACES);
     setUserProfile(INITIAL_USER_PROFILE);
     setUserReports(INITIAL_REPORTS);
-    localStorage.removeItem("waitless_places");
-    localStorage.removeItem("waitless_user_profile");
-    localStorage.removeItem("waitless_user_reports");
+    localStorage.removeItem("waitless_places_v2");
+    localStorage.removeItem("waitless_user_profile_v2");
+    localStorage.removeItem("waitless_user_reports_v2");
   };
   return <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
       {showServerStatus && (
