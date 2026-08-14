@@ -14,6 +14,7 @@ import { ReportModal } from "./components/ReportModal";
 import { ReportsView } from "./components/ReportsView";
 import { PatternsView } from "./components/PatternsView";
 import { ProfileView } from "./components/ProfileView";
+import { LoginView } from "./components/LoginView";
 export default function App() {
   const [places, setPlaces] = useState(() => {
     const saved = localStorage.getItem("waitless_places_v2");
@@ -38,6 +39,9 @@ export default function App() {
   const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [serverStatus, setServerStatus] = useState("Checking server...");
   const [showServerStatus, setShowServerStatus] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem("waitless_auth_v2") === "true";
+  });
   useEffect(() => {
     fetch('/api/health')
       .then(res => res.json())
@@ -108,7 +112,26 @@ export default function App() {
     localStorage.removeItem("waitless_places_v2");
     localStorage.removeItem("waitless_user_profile_v2");
     localStorage.removeItem("waitless_user_reports_v2");
+    localStorage.removeItem("waitless_auth_v2");
+    setIsAuthenticated(false);
   };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
+        {showServerStatus && (
+          <div style={{ background: serverStatus.includes('Connected') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
+            {serverStatus}
+          </div>
+        )}
+        <LoginView onLogin={() => {
+          localStorage.setItem("waitless_auth_v2", "true");
+          setIsAuthenticated(true);
+        }} />
+      </div>
+    );
+  }
+
   return <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
       {showServerStatus && (
         <div style={{ background: serverStatus.includes('Connected') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
