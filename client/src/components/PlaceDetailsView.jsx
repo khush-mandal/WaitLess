@@ -109,7 +109,17 @@ export const PlaceDetailsView = ({
                   {place.confidence || 82}% High Confidence
                 </div>
                 <div className="text-xs text-[#3f4945] mt-0.5">
-                  Based on {place.reportsCount || 14} real-time user reports in the last hour.
+                  Based on {place.reportsCount || 14} real-time user reports.
+                  <br />
+                  <span className="font-semibold text-[#00342b]">
+                    Updated: {place.updatedAt ? (
+                      (() => {
+                        const diff = Math.floor((Date.now() - place.updatedAt) / 60000);
+                        if (diff < 1) return "Just now";
+                        return `${diff} minutes ago`;
+                      })()
+                    ) : "12 minutes ago"}
+                  </span>
                 </div>
               </div>
             </div>

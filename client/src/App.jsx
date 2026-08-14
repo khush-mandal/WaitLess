@@ -72,7 +72,8 @@ export default function App() {
             statusLabel: label,
             currentWaitMin: waitMin,
             confidence: Math.min(100, p.confidence + 5),
-            reportsCount: p.reportsCount + 1
+            reportsCount: p.reportsCount + 1,
+            updatedAt: Date.now()
           };
         }
         return p;
