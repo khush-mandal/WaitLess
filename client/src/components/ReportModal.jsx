@@ -89,7 +89,7 @@ export const ReportModal = ({
               </div>
               <div>
                 <span className="block font-extrabold text-lg text-[#4CAF50]">Low</span>
-                <span className="block text-xs font-medium text-[#4CAF50]/80">Plenty of space</span>
+                <span className="block text-xs font-medium text-[#4CAF50]/80">0–5 min wait</span>
               </div>
             </button>
 
@@ -105,7 +105,7 @@ export const ReportModal = ({
               </div>
               <div>
                 <span className="block font-extrabold text-lg text-[#b08d00]">Medium</span>
-                <span className="block text-xs font-medium text-[#b08d00]/80">Getting busy</span>
+                <span className="block text-xs font-medium text-[#b08d00]/80">5–15 min</span>
               </div>
             </button>
 
@@ -121,7 +121,7 @@ export const ReportModal = ({
               </div>
               <div>
                 <span className="block font-extrabold text-lg text-[#F44336]">High</span>
-                <span className="block text-xs font-medium text-[#F44336]/80">Packed</span>
+                <span className="block text-xs font-medium text-[#F44336]/80">15+ min</span>
               </div>
             </button>
           </div>
