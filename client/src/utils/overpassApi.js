@@ -1,39 +1,17 @@
 export const fetchNearbyPlaces = async (lat, lon, radius = 5000) => {
-  // Overpass QL query to find amenities around the user where people typically wait
+  // Overpass QL highly optimized regex query to prevent server timeouts
+  const amenities = "restaurant|cafe|fast_food|hospital|clinic|pharmacy|post_office|bank|atm|cinema|theatre";
+  const shops = "supermarket|mall|hairdresser|beauty|barber";
+
   const query = `
-    [out:json];
+    [out:json][timeout:25];
     (
-      // Hospitality
-      node["amenity"="restaurant"](around:${radius},${lat},${lon});
-      node["amenity"="cafe"](around:${radius},${lat},${lon});
-      node["amenity"="fast_food"](around:${radius},${lat},${lon});
-      
-      // Health & Public Services
-      node["amenity"="hospital"](around:${radius},${lat},${lon});
-      node["amenity"="clinic"](around:${radius},${lat},${lon});
-      node["amenity"="pharmacy"](around:${radius},${lat},${lon});
-      node["amenity"="post_office"](around:${radius},${lat},${lon});
-      node["office"="government"](around:${radius},${lat},${lon});
-      
-      // Finance
-      node["amenity"="bank"](around:${radius},${lat},${lon});
-      node["amenity"="atm"](around:${radius},${lat},${lon});
-      
-      // Retail & Personal Care
-      node["shop"="supermarket"](around:${radius},${lat},${lon});
-      node["shop"="mall"](around:${radius},${lat},${lon});
-      node["shop"="hairdresser"](around:${radius},${lat},${lon});
-      node["shop"="beauty"](around:${radius},${lat},${lon});
-      node["shop"="barber"](around:${radius},${lat},${lon});
-      
-      // Entertainment & Transit
-      node["amenity"="cinema"](around:${radius},${lat},${lon});
-      node["amenity"="theatre"](around:${radius},${lat},${lon});
-      node["public_transport"="station"](around:${radius},${lat},${lon});
+      nwr["amenity"~"^(${amenities})$"](around:${radius},${lat},${lon});
+      nwr["shop"~"^(${shops})$"](around:${radius},${lat},${lon});
+      nwr["office"="government"](around:${radius},${lat},${lon});
+      nwr["public_transport"="station"](around:${radius},${lat},${lon});
     );
-    out body;
-    >;
-    out skel qt;
+    out center;
   `;
 
   const url = `https://overpass-api.de/api/interpreter`;
@@ -109,8 +87,8 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 5000) => {
         reportsCount: Math.floor(Math.random() * 20),
         image: `https://picsum.photos/seed/${el.id}/400/300`, // Reliable placeholder
         distance: "Nearby", 
-        lat: el.lat,
-        lon: el.lon,
+        lat: el.lat || (el.center && el.center.lat),
+        lon: el.lon || (el.center && el.center.lon),
         updatedAt: Date.now() - Math.floor(Math.random() * 10000000),
       };
     });

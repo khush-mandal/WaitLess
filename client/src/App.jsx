@@ -17,7 +17,7 @@ import { ProfileView } from "./components/ProfileView";
 import { LoginView } from "./components/LoginView";
 
 import { useLocation } from "./utils/useLocation";
-import { fetchNearbyPlaces } from "./utils/foursquareApi";
+import { fetchNearbyPlaces } from "./utils/overpassApi";
 
 export default function App() {
   const [places, setPlaces] = useState(() => {
@@ -64,12 +64,15 @@ export default function App() {
       });
   }, []);
 
-  // Fetch real places when location is available
+  // Fetch real places when location is resolved (either successfully or failed)
   useEffect(() => {
-    if (userLocation) {
-      setServerStatus("Fetching nearby real places (Foursquare)...");
+    if (!locationLoading) {
+      const lat = userLocation ? userLocation.latitude : 40.7580; // default to NYC
+      const lon = userLocation ? userLocation.longitude : -73.9855;
+
+      setServerStatus("Fetching nearby real places...");
       setShowServerStatus(true);
-      fetchNearbyPlaces(userLocation.latitude, userLocation.longitude, 2000).then((realPlaces) => {
+      fetchNearbyPlaces(lat, lon, 2000).then((realPlaces) => {
         if (realPlaces.length > 0) {
           // Merge real data
           setPlaces(prevPlaces => {
@@ -80,12 +83,12 @@ export default function App() {
           });
           setServerStatus(`Loaded ${realPlaces.length} real places nearby!`);
         } else {
-          setServerStatus("No nearby places found. (Did you add your Foursquare API Key?)");
+          setServerStatus("No nearby places found. (Check your Foursquare API Key)");
         }
         setTimeout(() => setShowServerStatus(false), 5000);
       });
     }
-  }, [userLocation]);
+  }, [userLocation, locationLoading]);
 
   useEffect(() => {
     localStorage.setItem("waitless_places_v2", JSON.stringify(places));

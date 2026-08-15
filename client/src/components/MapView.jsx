@@ -36,11 +36,8 @@ export const MapView = ({
   const defaultCenter = [40.7580, -73.9855];
   const center = userLocation ? [userLocation.latitude, userLocation.longitude] : defaultCenter;
 
-  const filterCategory = (categoryKey) => {
-    if (categoryKey === "coffee") setSelectedSector("hospitality");
-    else if (categoryKey === "groceries") setSelectedSector("retail");
-    else if (categoryKey === "finance") setSelectedSector("finance");
-    else setSelectedSector("all");
+  const filterCategory = (sector) => {
+    setSelectedSector(sector);
   };
 
   const filteredPlaces = places.filter((place) => {
@@ -91,6 +88,9 @@ export const MapView = ({
                 border: 2px solid white;
                 box-shadow: 0 2px 5px rgba(0,0,0,0.3);
                 transition: all 0.3s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
               "></div>`,
               iconSize: isSelected ? [24, 24] : [16, 16],
               iconAnchor: isSelected ? [12, 12] : [8, 8],
@@ -135,21 +135,12 @@ export const MapView = ({
         {/* Category Pills */}
         <div className="flex gap-2 overflow-x-auto hide-scrollbar py-1">
           <button
-            onClick={() => filterCategory("coffee")}
+            onClick={() => filterCategory("hospitality")}
             className={`whitespace-nowrap font-bold text-xs px-4 py-2 rounded-full border border-white/40 shadow-md flex items-center gap-1.5 transition-all ${
               selectedSector === "hospitality" ? "bg-[#004d40] text-[#7ebdac]" : "bg-white/90 backdrop-blur-md text-[#191c1b] hover:bg-white"
             }`}
           >
-            <span className="material-symbols-outlined text-[15px]">local_cafe</span> Coffee
-          </button>
-
-          <button
-            onClick={() => filterCategory("groceries")}
-            className={`whitespace-nowrap font-bold text-xs px-4 py-2 rounded-full border border-white/40 shadow-md flex items-center gap-1.5 transition-all ${
-              selectedSector === "retail" ? "bg-[#004d40] text-[#7ebdac]" : "bg-white/90 backdrop-blur-md text-[#191c1b] hover:bg-white"
-            }`}
-          >
-            <span className="material-symbols-outlined text-[15px]">shopping_cart</span> Groceries
+            <span className="material-symbols-outlined text-[15px]">restaurant</span> Restaurants
           </button>
 
           <button
@@ -158,11 +149,29 @@ export const MapView = ({
               selectedSector === "finance" ? "bg-[#004d40] text-[#7ebdac]" : "bg-white/90 backdrop-blur-md text-[#191c1b] hover:bg-white"
             }`}
           >
-            <span className="material-symbols-outlined text-[15px]">account_balance</span> Finance
+            <span className="material-symbols-outlined text-[15px]">account_balance</span> Banks
           </button>
 
           <button
-            onClick={() => setSelectedSector("all")}
+            onClick={() => filterCategory("health")}
+            className={`whitespace-nowrap font-bold text-xs px-4 py-2 rounded-full border border-white/40 shadow-md flex items-center gap-1.5 transition-all ${
+              selectedSector === "health" ? "bg-[#004d40] text-[#7ebdac]" : "bg-white/90 backdrop-blur-md text-[#191c1b] hover:bg-white"
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">local_hospital</span> Hospitals
+          </button>
+          
+          <button
+            onClick={() => filterCategory("entertainment")}
+            className={`whitespace-nowrap font-bold text-xs px-4 py-2 rounded-full border border-white/40 shadow-md flex items-center gap-1.5 transition-all ${
+              selectedSector === "entertainment" ? "bg-[#004d40] text-[#7ebdac]" : "bg-white/90 backdrop-blur-md text-[#191c1b] hover:bg-white"
+            }`}
+          >
+            <span className="material-symbols-outlined text-[15px]">theaters</span> Theaters
+          </button>
+
+          <button
+            onClick={() => filterCategory("all")}
             className={`whitespace-nowrap font-bold text-xs px-4 py-2 rounded-full border border-white/40 shadow-md flex items-center gap-1.5 transition-all ${
               selectedSector === "all" ? "bg-[#004d40] text-[#7ebdac]" : "bg-white/90 backdrop-blur-md text-[#191c1b] hover:bg-white"
             }`}
