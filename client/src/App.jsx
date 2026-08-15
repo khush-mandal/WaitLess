@@ -15,10 +15,18 @@ import { ReportsView } from "./components/ReportsView";
 import { PatternsView } from "./components/PatternsView";
 import { ProfileView } from "./components/ProfileView";
 import { LoginView } from "./components/LoginView";
+
+import { useLocation } from "./utils/useLocation";
+import { fetchNearbyPlaces } from "./utils/foursquareApi";
+
 export default function App() {
   const [places, setPlaces] = useState(() => {
     const saved = localStorage.getItem("waitless_places_v2");
-    return saved ? JSON.parse(saved) : INITIAL_PLACES;
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return parsed.filter(p => p.id && (p.id.startsWith('osm-') || p.id.startsWith('fsq-')));
+    }
+    return [];
   });
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem("waitless_user_profile_v2");
@@ -28,6 +36,7 @@ export default function App() {
     const saved = localStorage.getItem("waitless_user_reports_v2");
     return saved ? JSON.parse(saved) : INITIAL_REPORTS;
   });
+  
   const [activeTab, setActiveTab] = useState("explore");
   const [isMapView, setIsMapView] = useState(false);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -42,6 +51,9 @@ export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem("waitless_auth_v2") === "true";
   });
+
+  const { location: userLocation, loading: locationLoading } = useLocation();
+
   useEffect(() => {
     fetch('/api/health')
       .then(res => res.json())
@@ -51,6 +63,30 @@ export default function App() {
         setTimeout(() => setShowServerStatus(false), 5000);
       });
   }, []);
+
+  // Fetch real places when location is available
+  useEffect(() => {
+    if (userLocation) {
+      setServerStatus("Fetching nearby real places (Foursquare)...");
+      setShowServerStatus(true);
+      fetchNearbyPlaces(userLocation.latitude, userLocation.longitude, 2000).then((realPlaces) => {
+        if (realPlaces.length > 0) {
+          // Merge real data
+          setPlaces(prevPlaces => {
+            const existingReal = prevPlaces.filter(p => p.id && (p.id.startsWith('osm-') || p.id.startsWith('fsq-')));
+            const existingIds = new Set(existingReal.map(p => p.id));
+            const newRealPlaces = realPlaces.filter(p => !existingIds.has(p.id));
+            return [...existingReal, ...newRealPlaces];
+          });
+          setServerStatus(`Loaded ${realPlaces.length} real places nearby!`);
+        } else {
+          setServerStatus("No nearby places found. (Did you add your Foursquare API Key?)");
+        }
+        setTimeout(() => setShowServerStatus(false), 5000);
+      });
+    }
+  }, [userLocation]);
+
   useEffect(() => {
     localStorage.setItem("waitless_places_v2", JSON.stringify(places));
   }, [places]);
@@ -60,6 +96,7 @@ export default function App() {
   useEffect(() => {
     localStorage.setItem("waitless_user_reports_v2", JSON.stringify(userReports));
   }, [userReports]);
+
   const handleSubmitReport = (placeId, level) => {
     const pointsToAdd = level === "medium" ? 15 : 10;
     setPlaces(
@@ -107,9 +144,9 @@ export default function App() {
     setIsReportModalOpen(true);
   };
   const handleResetStats = () => {
-    setPlaces(INITIAL_PLACES);
+    setPlaces([]);
     setUserProfile(INITIAL_USER_PROFILE);
-    setUserReports(INITIAL_REPORTS);
+    setUserReports([]);
     localStorage.removeItem("waitless_places_v2");
     localStorage.removeItem("waitless_user_profile_v2");
     localStorage.removeItem("waitless_user_reports_v2");
@@ -121,7 +158,7 @@ export default function App() {
     return (
       <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
         {showServerStatus && (
-          <div style={{ background: serverStatus.includes('Connected') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
+          <div style={{ background: serverStatus.includes('Connected') || serverStatus.includes('Loaded') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
             {serverStatus}
           </div>
         )}
@@ -135,7 +172,7 @@ export default function App() {
 
   return <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
       {showServerStatus && (
-        <div style={{ background: serverStatus.includes('Connected') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
+        <div style={{ background: serverStatus.includes('Connected') || serverStatus.includes('Loaded') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
           {serverStatus}
         </div>
       )}
@@ -163,7 +200,7 @@ export default function App() {
       {
     /* Main View Area */
   }
-      <div className="flex-1">
+      <div className="flex-1 relative">
         {
     /* If a place detail is opened */
   }
@@ -181,6 +218,7 @@ export default function App() {
     searchQuery={searchQuery}
     setSearchQuery={setSearchQuery}
     onOpenReportModal={(placeId) => handleOpenReportModal(placeId)}
+    userLocation={userLocation}
   /> : <ExploreView
     places={places}
     userProfile={userProfile}
