@@ -132,15 +132,26 @@ export default function App() {
       iconName: targetPlace?.sector === "retail" ? "shopping_cart" : "storefront"
     };
     setUserReports((prev) => [newReport, ...prev]);
-    setUserProfile((prev) => ({
-      ...prev,
-      totalPoints: prev.totalPoints + pointsToAdd,
-      weeklyPoints: prev.weeklyPoints + pointsToAdd,
-      reportsThisWeek: prev.reportsThisWeek + 1,
-      totalReports: prev.totalReports + 1,
-      peopleHelped: prev.peopleHelped + 45,
-      impactScore: Math.min(100, prev.impactScore + 1)
-    }));
+    setUserProfile((prev) => {
+      let newTimeSaved = prev.timeSavedHours || "0h 0m";
+      let hours = parseInt(newTimeSaved.match(/(\d+)h/)?.[1] || 0);
+      let mins = parseInt(newTimeSaved.match(/(\d+)m/)?.[1] || 0);
+      mins += 5; // Add 5 mins per report for dynamic feedback
+      if (mins >= 60) {
+        hours += Math.floor(mins / 60);
+        mins = mins % 60;
+      }
+      return {
+        ...prev,
+        totalPoints: prev.totalPoints + pointsToAdd,
+        weeklyPoints: prev.weeklyPoints + pointsToAdd,
+        reportsThisWeek: prev.reportsThisWeek + 1,
+        totalReports: prev.totalReports + 1,
+        peopleHelped: prev.peopleHelped + 45,
+        impactScore: Math.min(100, prev.impactScore + 1),
+        timeSavedHours: `${hours}h ${mins}m`
+      };
+    });
   };
   const handleOpenReportModal = (placeId) => {
     setReportTargetPlaceId(placeId);
