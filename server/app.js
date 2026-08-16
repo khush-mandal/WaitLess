@@ -13,10 +13,20 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'WaitLess API is running' });
 });
 
+
 // Patterns route (connects to simulated BestTime.app data)
 const patternsRoutes = require('./routes/patterns');
 app.use('/api/patterns', patternsRoutes);
 
+
+
+// Places Route Import & Setup
+const placesRouter = require('./routes/places');
+app.use('/api/places', placesRouter);
+
+// Server Start 
+ main
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
