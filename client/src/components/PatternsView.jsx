@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useState, useEffect, useMemo } from "react";
 
 // Deterministic hash to seed per-venue crowd trends
@@ -84,10 +85,19 @@ const generateFallbackPattern = (place) => {
 };
 
 export const PatternsView = ({ places = [], onSelectPlace }) => {
+=======
+import { useState, useEffect } from "react";
+
+export const PatternsView = () => {
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
   const [timeRange, setTimeRange] = useState("week");
   const [category, setCategory] = useState("All");
   const [userFeedback, setUserFeedback] = useState(null);
   
+<<<<<<< HEAD
+=======
+  // Real data state
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -97,6 +107,7 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
 
   const categories = ["All", "Groceries", "Coffee", "Gyms", "Restaurants"];
 
+<<<<<<< HEAD
   // Filter 2-3 nearest queued/busy places
   const queuedPlaces = useMemo(() => {
     if (!places || places.length === 0) return [];
@@ -140,6 +151,8 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
     }
   }, [queuedPlaces]);
 
+=======
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
   const handleSearch = async (e) => {
     const query = e.target.value;
     setSearchQuery(query);
@@ -160,6 +173,7 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
 
   const handleSelectPlace = async (place) => {
     const name = place.display_name.split(',')[0];
+<<<<<<< HEAD
     const placeObj = {
       name,
       address: place.display_name,
@@ -169,11 +183,15 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
       crowdLevel: "medium"
     };
     setSelectedPlace(placeObj);
+=======
+    setSelectedPlace(place);
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
     setSearchQuery(name);
     setSearchResults([]);
     setIsLoading(true);
     
     try {
+<<<<<<< HEAD
       const res = await fetch(`/api/patterns?lat=${place.lat}&lon=${place.lon}&name=${encodeURIComponent(name)}`);
       if (res.ok) {
         const data = await res.json();
@@ -243,6 +261,21 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
 
   return (
     <div className="mesh-bg min-h-screen pt-20 pb-28 px-4 sm:px-6">
+=======
+      const res = await fetch(`http://localhost:5000/api/patterns?lat=${place.lat}&lon=${place.lon}&name=${encodeURIComponent(name)}`);
+      const data = await res.json();
+      setPatternData(data);
+    } catch (err) {
+      console.error(err);
+    }
+    
+    setIsLoading(false);
+    setUserFeedback(null); // Reset feedback for new place
+  };
+
+  return (
+    <div className="mesh-bg min-h-screen pt-20 pb-28 px-5">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
       <main className="max-w-4xl mx-auto space-y-6">
         <div className="flex justify-between items-center animate-slide-up">
           <div>
@@ -252,7 +285,11 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
         </div>
 
         {/* Location & Category Search */}
+<<<<<<< HEAD
         <section className="glass-card p-4 rounded-2xl animate-slide-up flex flex-col md:flex-row gap-4 border border-white/60 relative z-50 shadow-sm">
+=======
+        <section className="glass-card p-4 rounded-xl animate-slide-up flex flex-col md:flex-row gap-4 border border-white/60 relative z-50">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
           <div className="flex-1 relative">
             <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-[#3f4945]">search</span>
             <input 
@@ -260,7 +297,11 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
               value={searchQuery}
               onChange={handleSearch}
               placeholder="Search nearby places (e.g., Target, Starbucks)" 
+<<<<<<< HEAD
               className="w-full bg-white/60 border border-white/80 rounded-xl py-2.5 pl-10 pr-4 text-sm font-bold text-[#00342b] placeholder-[#707975] focus:outline-none focus:ring-2 focus:ring-[#00342b]/20"
+=======
+              className="w-full bg-white/60 border border-white/80 rounded-lg py-2.5 pl-10 pr-4 text-sm font-bold text-[#00342b] placeholder-[#707975] focus:outline-none focus:ring-2 focus:ring-[#00342b]/20"
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
             />
             {isSearching && (
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -270,12 +311,20 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
             
             {/* Search Results Dropdown */}
             {searchResults.length > 0 && (
+<<<<<<< HEAD
               <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-[#00342b]/10 rounded-xl shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+=======
+              <div className="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-md border border-[#00342b]/10 rounded-lg shadow-xl overflow-hidden z-50 max-h-60 overflow-y-auto">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                 {searchResults.map((result) => (
                   <button 
                     key={result.place_id}
                     onClick={() => handleSelectPlace(result)}
+<<<<<<< HEAD
                     className="w-full text-left px-4 py-3 hover:bg-[#00342b]/5 border-b border-[#00342b]/5 last:border-0 transition-colors cursor-pointer"
+=======
+                    className="w-full text-left px-4 py-3 hover:bg-[#00342b]/5 border-b border-[#00342b]/5 last:border-0 transition-colors"
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                   >
                     <p className="text-sm font-bold text-[#00342b]">{result.display_name.split(',')[0]}</p>
                     <p className="text-xs text-[#707975] truncate">{result.display_name.split(',').slice(1).join(',')}</p>
@@ -289,11 +338,16 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
               <button 
                 key={cat} 
                 onClick={() => setCategory(cat)}
+<<<<<<< HEAD
                 className={`px-4 py-2 rounded-xl text-sm font-bold whitespace-nowrap transition-all cursor-pointer ${category === cat ? 'bg-[#00342b] text-white shadow-md' : 'bg-white/50 text-[#3f4945] hover:bg-white/80'}`}
+=======
+                className={`px-4 py-2 rounded-lg text-sm font-bold whitespace-nowrap transition-all ${category === cat ? 'bg-[#00342b] text-white shadow-md' : 'bg-white/50 text-[#3f4945] hover:bg-white/80'}`}
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
               >
                 {cat}
               </button>
             ))}
+<<<<<<< HEAD
           </div>
         </section>
 
@@ -368,9 +422,12 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
           <div className="text-center py-20 animate-pulse">
             <span className="material-symbols-outlined text-4xl text-[#00342b] animate-spin mb-4">progress_activity</span>
             <p className="text-sm font-bold text-[#00342b]">Analyzing crowd data...</p>
+=======
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
           </div>
         )}
 
+<<<<<<< HEAD
         {patternData && !isLoading && (
           <div className="space-y-6 animate-slide-up">
             {/* Time Selector */}
@@ -388,6 +445,40 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
 
             {/* Crowdsourcing Feedback Widget */}
             <section className="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-white/60 bg-gradient-to-r from-white/40 to-transparent shadow-xs">
+=======
+        {!selectedPlace && !isLoading && (
+          <div className="text-center py-20 animate-slide-up delay-100">
+             <span className="material-symbols-outlined text-6xl text-[#00342b]/20 mb-4">storefront</span>
+             <h2 className="text-xl font-bold text-[#00342b]">Search for a place</h2>
+             <p className="text-sm text-[#3f4945]">Enter a location above to see real-time crowd patterns and wait times.</p>
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="text-center py-20 animate-pulse">
+            <span className="material-symbols-outlined text-4xl text-[#00342b] animate-spin mb-4">progress_activity</span>
+            <p className="text-sm font-bold text-[#00342b]">Analyzing crowd data...</p>
+          </div>
+        )}
+
+        {patternData && !isLoading && (
+          <div className="space-y-6 animate-slide-up">
+            {/* Time Selector */}
+            <section className="glass-card p-1.5 flex justify-between items-center rounded-xl">
+              {['today', 'week', 'month'].map(t => (
+                <button
+                  key={t}
+                  onClick={() => setTimeRange(t)}
+                  className={`flex-1 py-2 text-center capitalize rounded-lg text-sm font-bold transition-all ${timeRange === t ? "bg-white/90 text-[#00342b] shadow-sm" : "text-[#3f4945] hover:bg-white/40"}`}
+                >
+                  {t}
+                </button>
+              ))}
+            </section>
+
+            {/* Crowdsourcing Feedback Widget */}
+            <section className="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 border border-white/60 bg-gradient-to-r from-white/40 to-transparent">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
               <div className="flex items-center gap-3">
                 <div className="bg-[#00342b]/10 p-2 rounded-full text-[#00342b]">
                   <span className="material-symbols-outlined text-[20px]">radar</span>
@@ -399,8 +490,13 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
               </div>
               {!userFeedback ? (
                 <div className="flex gap-2 w-full sm:w-auto">
+<<<<<<< HEAD
                   <button onClick={() => setUserFeedback('quiet')} className="flex-1 sm:flex-none px-4 py-2 bg-white/60 hover:bg-[#4CAF50]/20 text-[#4CAF50] rounded-lg text-xs font-bold transition-colors border border-white/80 cursor-pointer">Quiet</button>
                   <button onClick={() => setUserFeedback('busy')} className="flex-1 sm:flex-none px-4 py-2 bg-white/60 hover:bg-[#F44336]/20 text-[#F44336] rounded-lg text-xs font-bold transition-colors border border-white/80 cursor-pointer">Busy</button>
+=======
+                  <button onClick={() => setUserFeedback('quiet')} className="flex-1 sm:flex-none px-4 py-2 bg-white/60 hover:bg-[#4CAF50]/20 text-[#4CAF50] rounded-lg text-xs font-bold transition-colors border border-white/80">Quiet</button>
+                  <button onClick={() => setUserFeedback('busy')} className="flex-1 sm:flex-none px-4 py-2 bg-white/60 hover:bg-[#F44336]/20 text-[#F44336] rounded-lg text-xs font-bold transition-colors border border-white/80">Busy</button>
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                 </div>
               ) : (
                 <div className="text-xs font-bold text-[#4CAF50] bg-[#4CAF50]/10 px-4 py-2 rounded-lg flex items-center gap-1 border border-[#4CAF50]/20">
@@ -409,6 +505,7 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
               )}
             </section>
 
+<<<<<<< HEAD
             {/* Variable Trends Bar Chart Card */}
             <section className="glass-card rounded-3xl p-6 border border-white/60 relative overflow-hidden shadow-sm">
               <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 gap-3">
@@ -430,6 +527,26 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                   <p className="text-xs text-[#3f4945] mt-0.5">
                     Based on live reports and forecasts for <strong>{patternData.venue_info.venue_name}</strong>.
                   </p>
+=======
+            {/* Weekly Trends Chart Card */}
+            <section className="glass-card rounded-2xl p-6 border border-white/60 relative overflow-hidden">
+              {patternData.insights.current_status.is_live_spike && (
+                <div className="absolute top-6 right-6 flex items-center gap-2 bg-[#F44336]/10 px-3 py-1.5 rounded-full border border-[#F44336]/20">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F44336] opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F44336]"></span>
+                  </span>
+                  <span className="text-[10px] font-extrabold text-[#F44336] uppercase tracking-wider">Live: Busier than usual</span>
+                </div>
+              )}
+
+              <div className="flex justify-between items-end mb-6">
+                <div>
+                  <h2 className="text-xl font-extrabold text-[#00342b] mb-1">
+                    {timeRange === "today" ? "Hourly Density" : timeRange === "week" ? "Weekly Trends" : "Monthly Overview"}
+                  </h2>
+                  <p className="text-xs text-[#3f4945]">Based on live reports and API forecasts.</p>
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                 </div>
 
                 {/* Theme Legend: LOW MED HIGH */}
@@ -447,13 +564,19 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
               </div>
 
               {/* Chart Area */}
+<<<<<<< HEAD
               <div className="relative h-48 w-full flex items-end justify-between gap-1.5 sm:gap-2.5 mt-8 border-b border-white/40 pb-2 pt-6 px-1">
                 <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20 z-0">
+=======
+              <div className="relative h-48 w-full flex items-end justify-between gap-2 mt-8 border-b border-white/30 pb-2">
+                <div className="absolute inset-0 flex flex-col justify-between pointer-events-none opacity-20">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                   <div className="border-t border-[#707975] w-full" />
                   <div className="border-t border-[#707975] w-full" />
                   <div className="border-t border-[#707975] w-full" />
                 </div>
 
+<<<<<<< HEAD
                 {/* WEEK VIEW (Mon - Sun Variable Trends) */}
                 {timeRange === "week" && weeklyDaysData.map((dayData, idx) => {
                   const avgBusyness = dayData.avgBusyness;
@@ -473,10 +596,27 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                     levelLabel = "Moderate";
                     barColor = "bg-[#FFC107]";
                     trackBg = "bg-[#FFC107]/20";
+=======
+                {patternData.analysis.map((dayData, idx) => {
+                  // Calculate average busyness for the day to plot on the week chart
+                  const avgBusyness = dayData.day_raw.reduce((a, b) => a + b, 0) / dayData.day_raw.filter(b => b > 0).length || 0;
+                  const height = `${Math.min(100, Math.max(10, avgBusyness))}%`;
+                  const isCurrent = new Date().getDay() === dayData.day_info.day_int;
+                  
+                  let level = 'low';
+                  let color = 'bg-[#4CAF50]';
+                  let bg = 'bg-[#4CAF50]/20';
+                  
+                  if (avgBusyness > 60) {
+                    level = 'high'; color = 'bg-[#F44336]'; bg = 'bg-[#F44336]/20';
+                  } else if (avgBusyness > 30) {
+                    level = 'medium'; color = 'bg-[#FFC107]'; bg = 'bg-[#FFC107]/20';
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                   }
 
                   return (
                     <div key={idx} className="flex-1 flex flex-col items-center gap-2 z-10 group h-full justify-end relative">
+<<<<<<< HEAD
                       {/* Floating Peak Low Badge */}
                       {isPeakLow && (
                         <div className="absolute -top-7 text-[9px] font-extrabold text-[#006e1c] bg-[#e8f5e9] px-2 py-0.5 rounded-full border border-[#a5d6a7] shadow-xs whitespace-nowrap z-10">
@@ -500,11 +640,29 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                         </div>
                       </div>
                       <span className={`text-xs font-bold ${isCurrent ? "text-[#00342b] font-extrabold underline underline-offset-2" : "text-[#3f4945]"}`}>
+=======
+                      {isCurrent && patternData.insights.current_status.is_live_spike && (
+                         <div className="absolute -top-6 bg-white/90 text-[#F44336] text-[9px] font-extrabold px-1.5 py-0.5 rounded shadow-sm border border-[#F44336]/20 whitespace-nowrap">
+                           Spike
+                         </div>
+                      )}
+                      <div className={`w-full ${bg} rounded-t-md relative overflow-hidden h-full flex items-end cursor-pointer`}>
+                        <div
+                          className={`w-full ${color} rounded-t-md transition-all duration-700 group-hover:brightness-110`}
+                          style={{ height: height }}
+                        />
+                        <div className="absolute opacity-0 group-hover:opacity-100 transition-opacity bottom-full mb-1 left-1/2 -translate-x-1/2 bg-[#00342b] text-white text-[10px] py-1 px-2 rounded font-bold pointer-events-none whitespace-nowrap z-20">
+                          {Math.round(avgBusyness)}%
+                        </div>
+                      </div>
+                      <span className={`text-xs font-bold ${isCurrent ? "text-[#00342b]" : "text-[#3f4945]"}`}>
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                         {dayData.day_info.day_text.slice(0, 3)}
                       </span>
                     </div>
                   );
                 })}
+<<<<<<< HEAD
 
                 {/* TODAY VIEW (15 Hourly Bars 8a to 10p) */}
                 {timeRange === "today" && todayHourlyData.map((hData, idx) => {
@@ -576,13 +734,19 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                     </div>
                   );
                 })}
+=======
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
               </div>
             </section>
 
             {/* Forecast & Planning Insights Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Next 4 Hours Forecast */}
+<<<<<<< HEAD
               <section className="glass-card rounded-2xl p-6 shadow-xs">
+=======
+              <section className="glass-card rounded-2xl p-6">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                 <div className="flex justify-between items-start mb-4">
                    <div className="flex items-center gap-2 text-[#00342b]">
                      <span className="material-symbols-outlined text-[20px]">schedule</span>
@@ -594,12 +758,20 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                 </div>
                 
                 <div className="space-y-3.5">
+<<<<<<< HEAD
+=======
+                  {/* Generate 4 hour slots starting from current hour */}
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                   {[0, 1, 2, 3].map(offset => {
                     const h = (new Date().getHours() + offset) % 24;
                     const ampm = h >= 12 ? 'PM' : 'AM';
                     const displayH = h % 12 || 12;
                     const currentDayData = patternData.analysis.find(a => a.day_info.day_int === new Date().getDay());
+<<<<<<< HEAD
                     const busyness = currentDayData ? currentDayData.day_raw[h] : 30;
+=======
+                    const busyness = currentDayData.day_raw[h];
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                     
                     let status = "Quiet";
                     let color = "text-[#4CAF50]";
@@ -608,7 +780,11 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                     
                     if (busyness > 60) {
                       status = "Busy"; color = "text-[#F44336]"; icon = "groups"; est = "20-30+ min";
+<<<<<<< HEAD
                     } else if (busyness > 35) {
+=======
+                    } else if (busyness > 30) {
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                       status = "Moderate"; color = "text-[#b08d00]"; icon = "group"; est = "10-15 min";
                     } else if (busyness === 0) {
                        status = "Closed"; color = "text-[#707975]"; icon = "block"; est = "-";
@@ -633,10 +809,17 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
               </section>
 
               {/* Planning Insights */}
+<<<<<<< HEAD
               <section className="glass-card rounded-2xl p-6 shadow-xs">
                 <h3 className="font-bold text-base text-[#00342b] mb-4">Planning Insights</h3>
 
                 <div className="bg-white/60 border border-[#00342b]/20 rounded-xl p-4 mb-3.5 shadow-xs relative overflow-hidden">
+=======
+              <section className="glass-card rounded-2xl p-6">
+                <h3 className="font-bold text-base text-[#00342b] mb-4">Planning Insights</h3>
+
+                <div className="bg-white/60 border border-[#00342b]/20 rounded-xl p-4 mb-3.5 shadow-sm relative overflow-hidden">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                   <div className="absolute -right-4 -top-4 opacity-5">
                     <span className="material-symbols-outlined text-[100px] text-[#00342b]">verified</span>
                   </div>
@@ -651,14 +834,22 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                       <p className="text-base font-extrabold text-[#00342b]">
                         {patternData.insights.best_time_to_go.day}, {patternData.insights.best_time_to_go.hour}
                       </p>
+<<<<<<< HEAD
                       <p className="text-xs text-[#3f4945] mt-1 font-medium">
+=======
+                      <p className="text-xs text-[#3f4945] mt-1">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                         {patternData.insights.best_time_to_go.reason}
                       </p>
                     </div>
                   </div>
                 </div>
 
+<<<<<<< HEAD
                 <div className="bg-white/50 border border-white/60 rounded-xl p-4 shadow-xs">
+=======
+                <div className="bg-white/50 border border-white/60 rounded-xl p-4 shadow-sm">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                   <div className="flex items-start gap-3">
                     <div className="bg-[#F44336]/20 p-2 rounded-full text-[#F44336] mt-0.5">
                       <span className="material-symbols-outlined text-[18px]">warning</span>
@@ -668,7 +859,11 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
                         Recent User Reports
                       </p>
                       <p className="text-sm font-bold text-[#191c1b]">"Line is wrapping around the aisle!"</p>
+<<<<<<< HEAD
                       <p className="text-[10px] text-[#707975] mt-1 font-medium">
+=======
+                      <p className="text-[10px] text-[#707975] mt-1">
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
                         Reported 12 minutes ago by 3 users
                       </p>
                     </div>
@@ -683,4 +878,7 @@ export const PatternsView = ({ places = [], onSelectPlace }) => {
   );
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 96ef6ca5a6501699a0c8db7acc71a4ff37839b1e
