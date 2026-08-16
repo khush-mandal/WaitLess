@@ -1,17 +1,28 @@
-<svg width="96" height="96" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="wl-title">
-  <title id="wl-title">WaitLess logo</title>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="512" height="512" rx="128" fill="url(#paint0_linear)"/>
+  
+  <!-- Outer Glow for premium modern look -->
+  <circle cx="256" cy="256" r="140" fill="#12D6C4" filter="blur(60px)" opacity="0.4"/>
+  
+  <!-- Glass outlines -->
+  <path d="M196 160 C 196 225 240 250 256 256 C 272 250 316 225 316 160" stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M196 352 C 196 287 240 262 256 256 C 272 262 316 287 316 352" stroke="white" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Solid fill for bottom glass (the sand) -->
+  <path d="M210 352 C 210 300 240 275 256 265 C 272 275 302 300 302 352 Z" fill="#12D6C4"/>
+  
+  <!-- Caps -->
+  <rect x="160" y="140" width="192" height="24" rx="12" fill="white"/>
+  <rect x="160" y="348" width="192" height="24" rx="12" fill="white"/>
+
+  <!-- Falling particle -->
+  <circle cx="256" cy="215" r="10" fill="#12D6C4"/>
+  <circle cx="256" cy="245" r="7" fill="#12D6C4"/>
+
   <defs>
-    <linearGradient id="wl-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#6C3CE9"/>
-      <stop offset="100%" stop-color="#12D6C4"/>
+    <linearGradient id="paint0_linear" x1="0" y1="0" x2="512" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00695C"/>
+      <stop offset="1" stop-color="#001B12"/>
     </linearGradient>
   </defs>
-  <rect x="2" y="2" width="92" height="92" rx="24" fill="#181233"/>
-  <rect x="2" y="2" width="92" height="92" rx="24" fill="url(#wl-grad)" fill-opacity="0.14"/>
-  <!-- hourglass silhouette: two triangles meeting at the waist, doubling as a downward-trend arrow -->
-  <path d="M28 26 H68 L50 47 Z" fill="url(#wl-grad)"/>
-  <path d="M28 70 H68 L50 49 Z" fill="url(#wl-grad)" fill-opacity="0.45"/>
-  <!-- live pulse crossing the waist -->
-  <path d="M22 48 H40 L44 40 L50 56 L54 48 H74" fill="none" stroke="#12D6C4" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
-  <circle cx="74" cy="48" r="3.4" fill="#12D6C4"/>
 </svg>

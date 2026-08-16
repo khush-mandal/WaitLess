@@ -1,15 +1,11 @@
-export const fetchNearbyPlaces = async (lat, lon, radius = 5000) => {
+export const fetchNearbyPlaces = async (lat, lon, radius = 10000) => {
   // Overpass QL highly optimized regex query to prevent server timeouts
-  const amenities = "restaurant|cafe|fast_food|hospital|clinic|pharmacy|post_office|bank|atm|cinema|theatre";
-  const shops = "supermarket|mall|hairdresser|beauty|barber";
+  const amenities = "restaurant|hospital|bank|cinema|theatre";
 
   const query = `
     [out:json][timeout:25];
     (
       nwr["amenity"~"^(${amenities})$"](around:${radius},${lat},${lon});
-      nwr["shop"~"^(${shops})$"](around:${radius},${lat},${lon});
-      nwr["office"="government"](around:${radius},${lat},${lon});
-      nwr["public_transport"="station"](around:${radius},${lat},${lon});
     );
     out center;
   `;
@@ -75,6 +71,36 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 5000) => {
         currentWaitMin = Math.floor(Math.random() * 10) + 5;
       }
 
+      const placeLat = el.lat || (el.center && el.center.lat);
+      const placeLon = el.lon || (el.center && el.center.lon);
+      
+      // Calculate distance in km
+      let distanceText = "Nearby";
+      if (placeLat && placeLon) {
+        const R = 6371; // Radius of the earth in km
+        const dLat = (placeLat - lat) * (Math.PI / 180);
+        const dLon = (placeLon - lon) * (Math.PI / 180);
+        const a = 
+          Math.sin(dLat/2) * Math.sin(dLat/2) +
+          Math.cos(lat * (Math.PI / 180)) * Math.cos(placeLat * (Math.PI / 180)) * 
+          Math.sin(dLon/2) * Math.sin(dLon/2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+        const d = R * c; // Distance in km
+        distanceText = d < 1 ? `${(d * 1000).toFixed(0)} m away` : `${d.toFixed(1)} km away`;
+      }
+
+      // Select relevant image based on sector
+      let imageUrl = "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=400&h=300"; // default building
+      if (sector === "hospitality") {
+        imageUrl = "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&q=80&w=400&h=300"; // Restaurant
+      } else if (sector === "finance") {
+        imageUrl = "https://images.unsplash.com/photo-1501167739983-4a11f2a3db68?auto=format&fit=crop&q=80&w=400&h=300"; // Bank
+      } else if (sector === "health") {
+        imageUrl = "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400&h=300"; // Hospital
+      } else if (sector === "entertainment") {
+        imageUrl = "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=400&h=300"; // Theater
+      }
+
       return {
         id: `osm-${el.id}`,
         name: el.tags.name,
@@ -85,11 +111,11 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 5000) => {
         statusLabel: crowdLevel === "high" ? "Busy" : crowdLevel === "medium" ? "Moderate" : "Not Busy",
         confidence: Math.floor(Math.random() * 30) + 60, // 60-90%
         reportsCount: Math.floor(Math.random() * 20),
-        image: `https://picsum.photos/seed/${el.id}/400/300`, // Reliable placeholder
-        address: el.tags["addr:street"] ? `${el.tags["addr:housenumber"] || ""} ${el.tags["addr:street"]}`.trim() : "88 Grand Avenue",
-        distance: "1.2 mi away", 
-        lat: el.lat || (el.center && el.center.lat),
-        lon: el.lon || (el.center && el.center.lon),
+        image: imageUrl,
+        address: el.tags["addr:street"] ? `${el.tags["addr:housenumber"] || ""} ${el.tags["addr:street"]}`.trim() : "Nearby Location",
+        distance: distanceText,
+        lat: placeLat,
+        lon: placeLon,
         updatedAt: Date.now() - Math.floor(Math.random() * 10000000),
       };
     });

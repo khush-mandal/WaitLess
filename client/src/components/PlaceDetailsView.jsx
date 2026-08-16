@@ -177,10 +177,55 @@ export const PlaceDetailsView = ({
               </span>
               <div>
                 <div className="text-base font-extrabold text-[#00342b]">
-                  {place.confidence || 82}% High Confidence
+                  {place.confidence || 88}% Prediction Confidence
                 </div>
                 <div className="text-xs text-[#3f4945] font-medium mt-0.5 leading-relaxed">
-                  Based on {place.reportsCount || 14} real-time user reports in the last hour.
+                  Calculated by fusing Google/OSM APIs, live user reports, AI web sentiment & seeded demo patterns.
+                </div>
+              </div>
+            </div>
+
+            {/* 🌐 Multi-Source Data Fusion Breakdown */}
+            <div className="bg-white/80 rounded-2xl p-4 border border-emerald-900/10 space-y-3">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00342b] flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[18px] text-emerald-600">hub</span>
+                Multi-Source Crowd Intelligence Breakdown
+              </h3>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100">
+                  <div className="font-bold text-[#00342b] flex items-center gap-1">
+                    <span>🔗 External APIs</span>
+                  </div>
+                  <div className="text-[11px] text-emerald-800 font-semibold mt-1">
+                    Google / OSM Baseline ({place.sourcesBreakdown?.externalApiBaseline?.weight || '30%'})
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-blue-50 border border-blue-100">
+                  <div className="font-bold text-blue-900 flex items-center gap-1">
+                    <span>👥 User Reports</span>
+                  </div>
+                  <div className="text-[11px] text-blue-800 font-semibold mt-1">
+                    {place.reportsCount || 12} live reports ({place.sourcesBreakdown?.userReports?.weight || '40%'})
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-purple-50 border border-purple-100">
+                  <div className="font-bold text-purple-900 flex items-center gap-1">
+                    <span>🤖 AI Review Agent</span>
+                  </div>
+                  <div className="text-[11px] text-purple-800 font-semibold mt-1">
+                    Web Scraper NLP ({place.sourcesBreakdown?.aiWebScraper?.weight || '15%'})
+                  </div>
+                </div>
+
+                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-100">
+                  <div className="font-bold text-amber-900 flex items-center gap-1">
+                    <span>📊 Seeded Demo Data</span>
+                  </div>
+                  <div className="text-[11px] text-amber-800 font-semibold mt-1">
+                    Hackathon Patterns ({place.sourcesBreakdown?.seededHackathonData?.weight || '15%'})
+                  </div>
                 </div>
               </div>
             </div>

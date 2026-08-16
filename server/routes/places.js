@@ -1,44 +1,45 @@
 const express = require('express');
 const router = express.Router();
+const { fetchExternalPlaceData } = require('../services/externalApiService');
+const { calculateCrowdPrediction } = require('../services/predictionEngine');
+const { dbQuery } = require('../db');
 
-// Real OpenStreetMap (Overpass API) Integration
+// Real OpenStreetMap & Google Places Integration with Multi-Source Fused Predictions
 router.get('/nearby', async (req, res) => {
-  const { lat, lng } = req.query;
+  const { lat, lng, query } = req.query;
 
   if (!lat || !lng) {
     return res.status(400).json({ success: false, message: "Latitude and Longitude are required" });
   }
 
   try {
-    // 2km radius ke andar amenities search karne ke liye Overpass Query
-    const overpassUrl = `https://overpass-api.de/api/interpreter?data=[out:json];node(around:2000,${lat},${lng})["amenity"];out 15;`;
+    // 1. Fetch baseline places from External API (Google Places API / Overpass OSM)
+    const rawPlaces = await fetchExternalPlaceData(lat, lng, query);
 
-    const response = await fetch(overpassUrl);
-    const data = await response.json();
+    // 2. Enrich each place using the Unified Prediction Engine
+    const enrichedPlaces = await Promise.all(
+      rawPlaces.map(async (place) => {
+        const userReports = await dbQuery(
+          `SELECT * FROM user_reports WHERE place_id = ? ORDER BY timestamp DESC LIMIT 15`,
+          [place.id]
+        );
 
-    // Map Overpass results to WaitLess Schema
-    const places = data.elements
-      .filter((item) => item.tags && item.tags.name)
-      .map((item, index) => {
-        const crowdLevels = ["Low", "Moderate", "High"];
-        const crowd = crowdLevels[index % 3];
-        const wait = crowd === "Low" ? "5m" : crowd === "Moderate" ? "15m" : "35m";
+        const prediction = await calculateCrowdPrediction(place, userReports);
 
         return {
-          id: item.id,
-          name: item.tags.name,
-          category: item.tags.amenity,
-          crowdLevel: crowd,
-          waitTime: wait,
-          confidence: "85%",
-          lat: item.lat,
-          lng: item.lon,
+          ...place,
+          crowdLevel: prediction.crowdLevel,
+          waitTime: prediction.estimatedWaitTime,
+          confidence: prediction.confidence,
+          busynessScore: prediction.calculatedBusyness,
+          sourcesBreakdown: prediction.breakdown,
         };
-      });
+      })
+    );
 
-    res.json({ success: true, data: places });
+    res.json({ success: true, count: enrichedPlaces.length, data: enrichedPlaces });
   } catch (error) {
-    console.error("Overpass API Error:", error);
+    console.error("Places API Error:", error);
     res.status(500).json({ success: false, message: "Failed to fetch nearby places" });
   }
 });

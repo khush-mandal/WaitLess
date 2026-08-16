@@ -262,7 +262,7 @@ export const INITIAL_PLACES = [
     distance: "0.6 mi",
     address: "99 Unexpected Ave",
     currentWaitMin: 45, // Set to high currently
-    crowdLevel: "high", 
+    crowdLevel: "high",
     statusLabel: "Very Busy (Unexpected)",
     confidence: 90,
     reportsCount: 12,

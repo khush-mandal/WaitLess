@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export const ExploreView = ({
   places,
   userProfile,
@@ -9,6 +11,9 @@ export const ExploreView = ({
   onOpenReportModal,
   onNavigateToReports
 }) => {
+  const [sortBy, setSortBy] = useState("default");
+  const [filterOpenNow, setFilterOpenNow] = useState(false);
+
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'Updated recently';
     const diff = Date.now() - timestamp;
@@ -20,11 +25,31 @@ export const ExploreView = ({
     return `Updated ${Math.floor(hours / 24)}d ago`;
   };
 
-  const filteredPlaces = places.filter((place) => {
+  let result = places.filter((place) => {
     const matchesSector = selectedSector === "all" || place.sector === selectedSector;
-    const matchesQuery = searchQuery === "" || place.name.toLowerCase().includes(searchQuery.toLowerCase()) || place.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSector && matchesQuery;
+    const matchesQuery = searchQuery === "" || 
+      (place.name && place.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
+      (place.category && place.category.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // For now, we assume all mock places are open if they don't have isOpen explicitly false.
+    // If we have actual isOpen data, we use it.
+    const matchesOpenNow = filterOpenNow ? place.isOpen !== false : true; 
+    
+    return matchesSector && matchesQuery && matchesOpenNow;
   });
+
+  if (sortBy === "wait_time") {
+    result.sort((a, b) => {
+      const waitA = a.currentWaitMin === -1 ? 9999 : (a.currentWaitMin || 0);
+      const waitB = b.currentWaitMin === -1 ? 9999 : (b.currentWaitMin || 0);
+      return waitA - waitB;
+    });
+  } else if (sortBy === "distance") {
+    const parseDistance = (d) => parseFloat(d) || 0;
+    result.sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance));
+  }
+
+  const filteredPlaces = result;
   return <div className="mesh-bg min-h-screen pt-20 pb-28 px-5">
       <main className="max-w-7xl mx-auto space-y-6">
         {
@@ -155,30 +180,33 @@ export const ExploreView = ({
         <section className="animate-slide-up delay-300">
           <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
             <button
-    onClick={() => setSelectedSector("all")}
-    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all ${selectedSector === "all" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+    onClick={() => { setSortBy("default"); setFilterOpenNow(false); setSelectedSector("all"); }}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all ${(sortBy === "default" && !filterOpenNow && selectedSector === "all") ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
   >
               <span className="material-symbols-outlined text-[15px]">tune</span>
               Filters
             </button>
 
             <button
-    onClick={() => setSelectedSector("hospitality")}
-    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${selectedSector === "hospitality" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+    onClick={() => setSortBy(sortBy === "wait_time" ? "default" : "wait_time")}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${sortBy === "wait_time" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
   >
               Wait Time
               <span className="material-symbols-outlined text-[15px]">arrow_drop_down</span>
             </button>
 
             <button
-    onClick={() => setSelectedSector("retail")}
-    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${selectedSector === "retail" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+    onClick={() => setSortBy(sortBy === "distance" ? "default" : "distance")}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${sortBy === "distance" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
   >
               Distance
               <span className="material-symbols-outlined text-[15px]">arrow_drop_down</span>
             </button>
 
-            <button className="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap glass-card text-[#3f4945] hover:bg-white transition-all">
+            <button
+    onClick={() => setFilterOpenNow(!filterOpenNow)}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${filterOpenNow ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+  >
               Open Now
             </button>
           </div>
