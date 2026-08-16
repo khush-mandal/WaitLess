@@ -247,7 +247,7 @@ export default function App() {
     userProfile={userProfile}
     userReports={userReports}
     onOpenReportModal={() => handleOpenReportModal()}
-  /> : activeTab === "patterns" ? <PatternsView /> : activeTab === "profile" ? <ProfileView
+  /> : activeTab === "patterns" ? <PatternsView places={places} onSelectPlace={(place) => setSelectedPlace(place)} /> : activeTab === "profile" ? <ProfileView
     userProfile={userProfile}
     onResetStats={handleResetStats}
   /> : null}

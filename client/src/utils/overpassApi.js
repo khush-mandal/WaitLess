@@ -86,7 +86,8 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 5000) => {
         confidence: Math.floor(Math.random() * 30) + 60, // 60-90%
         reportsCount: Math.floor(Math.random() * 20),
         image: `https://picsum.photos/seed/${el.id}/400/300`, // Reliable placeholder
-        distance: "Nearby", 
+        address: el.tags["addr:street"] ? `${el.tags["addr:housenumber"] || ""} ${el.tags["addr:street"]}`.trim() : "88 Grand Avenue",
+        distance: "1.2 mi away", 
         lat: el.lat || (el.center && el.center.lat),
         lon: el.lon || (el.center && el.center.lon),
         updatedAt: Date.now() - Math.floor(Math.random() * 10000000),

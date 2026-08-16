@@ -203,6 +203,7 @@ export const ExploreView = ({
     if (isUnknown) {
       return <div
         key={place.id}
+        onClick={() => onSelectPlace(place)}
         className="glass-card rounded-2xl p-5 flex flex-col justify-between border-dashed border-2 border-white/60 bg-white/30 hover:bg-white/50 transition-all cursor-pointer group"
       >
                     <div>
