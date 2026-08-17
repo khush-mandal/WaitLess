@@ -24,7 +24,7 @@ function RecenterMap({ location }) {
 }
 
 export default function LiveMap({ places, userLocation }) {
-  const defaultCenter = userLocation || [29.8370, 76.9170];
+  const defaultCenter = userLocation || [28.9931, 77.0151];
 
   return (
     <div style={{ height: '350px', width: '100%', borderRadius: '12px', overflow: 'hidden' }}>

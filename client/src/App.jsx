@@ -88,39 +88,63 @@ function AppMain() {
       });
   }, []);
 
-  // Fetch real places when location is resolved (or update nearby fallback)
-  useEffect(() => {
-    if (!locationLoading) {
-      const lat = userLocation ? userLocation.latitude : 29.8370;
-      const lon = userLocation ? userLocation.longitude : 76.9170;
+  // Nilokheri, Karnal fallback coordinates
+  const NILOKHERI_LAT = 29.8339;
+  const NILOKHERI_LON = 76.9201;
 
-      // Immediately recalculate places relative to user location
-      const updatedFallback = getPlacesNearLocation(lat, lon);
-      
-      setPlaces(prevPlaces => {
-        if (!prevPlaces || prevPlaces.length === 0) return updatedFallback;
-        const osmPlaces = prevPlaces.filter(p => p.id && p.id.startsWith('osm-'));
-        return [...updatedFallback, ...osmPlaces];
-      });
+  const loadNilokheriFallback = () => {
+    setServerStatus("Showing places in Nilokheri, Karnal");
+    setShowServerStatus(true);
+    const nilokheriSpots = getPlacesNearLocation(NILOKHERI_LAT, NILOKHERI_LON);
+    setPlaces(nilokheriSpots);
 
-      setServerStatus("Fetching nearby real places...");
-      setShowServerStatus(true);
-      
-      fetchNearbyPlaces(lat, lon, 10000).then((realPlaces) => {
+    // Fetch real OpenStreetMap places in Nilokheri, Karnal
+    fetchNearbyPlaces(NILOKHERI_LAT, NILOKHERI_LON, 15000)
+      .then((realPlaces) => {
         if (realPlaces && realPlaces.length > 0) {
-          setPlaces(() => {
-            const currentFallback = getPlacesNearLocation(lat, lon);
-            return [...currentFallback, ...realPlaces];
-          });
-          setServerStatus(`Loaded ${realPlaces.length} real places nearby!`);
-        } else {
-          setPlaces(getPlacesNearLocation(lat, lon));
-          setServerStatus("Showing nearby places");
+          setPlaces([...nilokheriSpots, ...realPlaces]);
+          setServerStatus(`Loaded ${realPlaces.length} places in Nilokheri, Karnal`);
         }
         setTimeout(() => setShowServerStatus(false), 5000);
-      }).catch(err => {
-        setPlaces(getPlacesNearLocation(lat, lon));
+      })
+      .catch(() => {
+        setTimeout(() => setShowServerStatus(false), 5000);
       });
+  };
+
+  // Fetch real places when location is resolved (or fallback to Nilokheri, Karnal)
+  useEffect(() => {
+    if (!locationLoading) {
+      if (userLocation && userLocation.latitude && userLocation.longitude) {
+        const userLat = userLocation.latitude;
+        const userLon = userLocation.longitude;
+
+        setServerStatus("Fetching nearby places around your location...");
+        setShowServerStatus(true);
+
+        fetchNearbyPlaces(userLat, userLon, 10000)
+          .then((realPlaces) => {
+            if (realPlaces && realPlaces.length > 0) {
+              // Successfully fetched real places around user location
+              const fallbackUser = getPlacesNearLocation(userLat, userLon);
+              setPlaces([...fallbackUser, ...realPlaces]);
+              setServerStatus(`Loaded ${realPlaces.length} real places near you!`);
+            } else {
+              // No places found around user location -> Fallback to Nilokheri, Karnal
+              console.warn("No places found near user location. Falling back to Nilokheri, Karnal.");
+              loadNilokheriFallback();
+            }
+            setTimeout(() => setShowServerStatus(false), 5000);
+          })
+          .catch((err) => {
+            console.error("Error fetching places near user location:", err);
+            // Error finding places -> Fallback to Nilokheri, Karnal
+            loadNilokheriFallback();
+          });
+      } else {
+        // Location not enabled or denied -> Fallback to Nilokheri, Karnal
+        loadNilokheriFallback();
+      }
     }
   }, [userLocation, locationLoading]);
 

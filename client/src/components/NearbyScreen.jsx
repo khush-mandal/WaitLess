@@ -21,7 +21,7 @@ export default function NearbyScreen() {
         (error) => {
           console.error("Location error:", error);
           // Fallback location if permission denied (Nilokheri, Karnal)
-          fetchPlacesNearby(29.8370, 76.9170);
+          fetchPlacesNearby(29.8339, 76.9201);
           setLoading(false);
         }
       );

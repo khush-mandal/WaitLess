@@ -79,11 +79,11 @@ export const INITIAL_REPORTS = [
 export const INITIAL_PLACES = [
   {
     id: "place-1",
-    name: "The Roasted Bean Cafe",
+    name: "The Roasted Bean",
     sector: "hospitality",
     category: "Coffee Shop • Hospitality",
-    distance: "0.2 km",
-    address: "GT Road, Nilokheri, Karnal",
+    distance: "0.2 mi",
+    address: "142 Metro Boulevard",
     currentWaitMin: 5,
     crowdLevel: "low",
     statusLabel: "Not Busy",
@@ -110,18 +110,18 @@ export const INITIAL_PLACES = [
     smartAlternative: {
       id: "place-alt-1",
       name: "Artisan Grind",
-      distance: "0.1 km away",
+      distance: "0.1 mi away",
       expectedWait: "~0m expected wait",
       savingTimeMin: 10,
     },
   },
   {
     id: "place-2",
-    name: "Market Fresh Superstore",
+    name: "Market Fresh",
     sector: "retail",
     category: "Grocery Store • Retail",
-    distance: "0.8 km",
-    address: "Main Bazar, Nilokheri, Karnal",
+    distance: "1.2 mi",
+    address: "88 Grand Avenue",
     currentWaitMin: 45,
     crowdLevel: "high",
     statusLabel: "Very Busy",
@@ -150,18 +150,18 @@ export const INITIAL_PLACES = [
     smartAlternative: {
       id: "place-alt-2",
       name: "Green Grocers",
-      distance: "0.2 km away",
+      distance: "0.2 mi away",
       expectedWait: "~5m expected wait",
       savingTimeMin: 40,
     },
   },
   {
     id: "place-3",
-    name: "State Bank of India - Nilokheri",
+    name: "Metro Bank Main Branch",
     sector: "finance",
     category: "Bank • Finance",
-    distance: "0.5 km",
-    address: "Railway Station Road, Nilokheri, Karnal",
+    distance: "0.5 mi",
+    address: "500 Financial Center",
     currentWaitMin: 15,
     crowdLevel: "medium",
     statusLabel: "Moderate",
@@ -299,7 +299,7 @@ export const INITIAL_PLACES = [
 ];
 
 // Generates places relative to a user location with exact coordinates & distances (Default: Nilokheri, Karnal)
-export const getPlacesNearLocation = (userLat = 29.8370, userLng = 76.9170) => {
+export const getPlacesNearLocation = (userLat = 29.8339, userLng = 76.9201) => {
   const offsets = [
     { dLat: 0.0035, dLng: 0.0042 },
     { dLat: -0.0048, dLng: 0.0061 },
