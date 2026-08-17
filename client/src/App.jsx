@@ -31,7 +31,7 @@ function AppMain() {
       const parsed = JSON.parse(saved);
       if (parsed.length > 0) return parsed;
     }
-    return [];
+    return getPlacesNearLocation(29.8339, 76.9201);
   });
   const [userProfile, setUserProfile] = useState(() => {
     const saved = localStorage.getItem("waitless_user_profile_v2");
@@ -251,10 +251,19 @@ function AppMain() {
     localStorage.removeItem("waitless_user_profile_v2");
     localStorage.removeItem("waitless_user_reports_v2");
     localStorage.removeItem("waitless_auth_v2");
+    setGuestAuth(false);
     setShowLogin(true);
   };
 
-  if (!isAuthenticated) {
+  const [guestAuth, setGuestAuth] = useState(() => localStorage.getItem("waitless_auth_v2") === "true");
+  const isUserAuth = isAuthenticated || guestAuth;
+
+  const handleLoginSuccess = () => {
+    localStorage.setItem("waitless_auth_v2", "true");
+    setGuestAuth(true);
+  };
+
+  if (!isUserAuth) {
     return (
       <>
         {showServerStatus && (
@@ -263,7 +272,7 @@ function AppMain() {
           </div>
         )}
         {!showLogin ? (
-          <LandingView onGetStarted={() => setShowLogin(true)} />
+          <LandingView onGetStarted={handleLoginSuccess} />
         ) : (
           <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
             <div className="absolute top-6 left-6 z-50">
@@ -274,9 +283,7 @@ function AppMain() {
                 <span className="material-symbols-outlined">arrow_back</span>
               </button>
             </div>
-            <LoginView onLogin={() => {
-              localStorage.setItem("waitless_auth_v2", "true");
-            }} />
+            <LoginView onLogin={handleLoginSuccess} />
           </div>
         )}
       </>
@@ -378,6 +385,7 @@ function AppMain() {
           localStorage.removeItem("waitless_auth_v2");
           localStorage.removeItem("waitless_jwt_token");
           localStorage.removeItem("waitless_refresh_token");
+          setGuestAuth(false);
           setShowLogin(true);
         }}
         onResetStats={handleResetStats}
