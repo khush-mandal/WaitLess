@@ -102,13 +102,11 @@ function AppMain() {
     // Fetch real OpenStreetMap places in Nilokheri, Karnal
     fetchNearbyPlaces(NILOKHERI_LAT, NILOKHERI_LON, 15000)
       .then((realPlaces) => {
-        const combined = (realPlaces && realPlaces.length > 0) ? [...realPlaces, ...nilokheriSpots] : nilokheriSpots;
-        const uniqueMap = new Map();
-        combined.forEach((place) => {
-          const key = (place.name || place.id || "").toLowerCase();
-          if (!uniqueMap.has(key)) uniqueMap.set(key, place);
-        });
-        setPlaces(Array.from(uniqueMap.values()));
+        if (realPlaces && realPlaces.length > 0) {
+          setPlaces(realPlaces);
+        } else {
+          setPlaces(nilokheriSpots);
+        }
       })
       .catch(() => {
         setPlaces(nilokheriSpots);
@@ -126,23 +124,20 @@ function AppMain() {
 
         fetchNearbyPlaces(userLat, userLon, 10000)
           .then((realPlaces) => {
-            const fallbackUser = getPlacesNearLocation(userLat, userLon);
-            const combined = (realPlaces && realPlaces.length > 0) ? [...realPlaces, ...fallbackUser] : fallbackUser;
-            
-            // Deduplicate to avoid duplicate spots
-            const uniqueMap = new Map();
-            combined.forEach((place) => {
-              const key = (place.name || place.id || "").toLowerCase();
-              if (!uniqueMap.has(key)) uniqueMap.set(key, place);
-            });
-            const deduplicated = Array.from(uniqueMap.values());
-
-            setPlaces(deduplicated);
-            const msg = "Updated places according to your location";
-            setServerStatus(msg);
-            setLocationToast(msg);
-            setShowLocationToast(true);
-            setTimeout(() => setShowLocationToast(false), 5000);
+            if (realPlaces && realPlaces.length > 0) {
+              setPlaces(realPlaces);
+              const msg = "Updated places according to your location";
+              setServerStatus(msg);
+              setLocationToast(msg);
+              setShowLocationToast(true);
+              setTimeout(() => setShowLocationToast(false), 5000);
+            } else {
+              setServerStatus("Live map data unavailable. Showing simulated nearby places.");
+              setLocationToast("Live data timeout. Showing simulated places.");
+              setShowLocationToast(true);
+              setTimeout(() => setShowLocationToast(false), 5000);
+              loadNilokheriFallback();
+            }
           })
           .catch((err) => {
             console.error("Error fetching places near user location:", err);

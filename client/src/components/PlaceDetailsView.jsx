@@ -69,18 +69,59 @@ export const PlaceDetailsView = ({
   const sectorUpper = (place.sector || "RETAIL").toUpperCase();
   const categoryTag = categoryUpper.includes("•") ? categoryUpper : `${categoryUpper} • ${sectorUpper}`;
 
-  // Smart Alternative lookup or fallback
-  const alternativePlace = place.smartAlternative 
-    ? (allPlaces.find(p => p.id === place.smartAlternative.id || p.name.includes(place.smartAlternative.name)) || {
-        name: place.smartAlternative.name || "Green Grocers",
-        distance: place.smartAlternative.distance || "0.2 mi away",
-        expectedWait: place.smartAlternative.expectedWait || "~5m expected wait"
-      })
-    : (allPlaces.find(p => p.id !== place.id && (p.sector === place.sector || p.name.includes("Green"))) || {
-        name: "Green Grocers",
-        distance: "0.2 mi away",
-        expectedWait: "~5m expected wait"
-      });
+  // Smart Alternative lookup algorithm
+  const getSmartAlternative = () => {
+    if (place.smartAlternative) {
+      return allPlaces.find(p => p.id === place.smartAlternative.id) || place.smartAlternative;
+    }
+    
+    // Filter places in same sector, excluding current place
+    const sameSectorPlaces = allPlaces.filter(p => p.id !== place.id && p.sector === place.sector);
+    
+    if (sameSectorPlaces.length === 0) return null;
+    
+    // Priority: Lower crowd level
+    const crowdLevelScore = { "low": 1, "medium": 2, "high": 3, "unknown": 4 };
+    const currentScore = crowdLevelScore[place.crowdLevel] || 3;
+    
+    // Find alternatives with better or equal crowd level
+    let candidates = sameSectorPlaces.filter(p => (crowdLevelScore[p.crowdLevel] || 3) < currentScore);
+    
+    // If no strictly better place, find one with a lower wait time if possible, or just fallback
+    if (candidates.length === 0) {
+      candidates = sameSectorPlaces.filter(p => p.currentWaitMin < place.currentWaitMin);
+    }
+    
+    if (candidates.length === 0) {
+      candidates = sameSectorPlaces; // Just recommend anything else in sector
+    }
+    
+    // Sort by wait time, then distance
+    candidates.sort((a, b) => {
+      if (a.currentWaitMin !== b.currentWaitMin) return (a.currentWaitMin || 0) - (b.currentWaitMin || 0);
+      
+      const getKm = (distStr) => {
+        if (!distStr) return 999;
+        const num = parseFloat(distStr);
+        if (distStr.includes('km')) return num;
+        if (distStr.includes('mi')) return num * 1.609;
+        if (distStr.includes('m away')) return num / 1000;
+        return num;
+      };
+      
+      return getKm(a.distance) - getKm(b.distance);
+    });
+    
+    return candidates[0] || null;
+  };
+
+  const alternativePlaceRaw = getSmartAlternative();
+  const alternativePlace = alternativePlaceRaw || {
+    name: "Try another time",
+    distance: "Nearby",
+    expectedWait: "Check back later",
+    id: null
+  };
 
   const currentWaitDisplay = place.currentWaitMin > 0 ? `~${place.currentWaitMin}m wait` : "~5m wait";
 
@@ -147,10 +188,20 @@ export const PlaceDetailsView = ({
                 </h1>
               </div>
 
-              {/* Wait Status Pill on Image */}
-              <div className="bg-black/60 backdrop-blur-md border border-white/20 rounded-full px-3.5 py-1.5 flex items-center gap-1.5 text-white font-bold text-xs sm:text-sm shadow-md whitespace-nowrap">
-                <span className="material-symbols-outlined text-[16px] text-emerald-400">schedule</span>
-                <span>{currentWaitDisplay}</span>
+              {/* Core Architectural Rule: Crowd Level + Wait Time + Confidence */}
+              <div className="bg-black/70 backdrop-blur-md border border-white/20 rounded-full px-4 py-2 flex items-center gap-3 text-white font-bold text-xs sm:text-sm shadow-md whitespace-nowrap divide-x divide-white/30">
+                <div className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-emerald-400">groups</span>
+                    <span className="uppercase">{place.statusLabel || place.crowdLevel || "Moderate"}</span>
+                </div>
+                <div className="flex items-center gap-1.5 pl-3">
+                    <span className="material-symbols-outlined text-[16px] text-emerald-400">schedule</span>
+                    <span>{currentWaitDisplay}</span>
+                </div>
+                <div className="flex items-center gap-1.5 pl-3">
+                    <span className="material-symbols-outlined text-[16px] text-emerald-400">verified</span>
+                    <span>{place.confidence || 85}%</span>
+                </div>
               </div>
             </div>
           </div>
@@ -358,7 +409,7 @@ export const PlaceDetailsView = ({
                   bolt
                 </span>
                 <span className="text-xs font-bold text-[#006e1c]">
-                  {alternativePlace.expectedWait || "~5m expected wait"}
+                  {alternativePlace.expectedWait || (alternativePlace.currentWaitMin > 0 ? `~${alternativePlace.currentWaitMin}m expected wait` : "~5m expected wait")}
                 </span>
               </div>
             </div>

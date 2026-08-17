@@ -12,30 +12,21 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 10000) => {
   
   for (const url of endpoints) {
     try {
-      // First try GET request with 8s timeout
+      // Use POST request with 10s timeout as it's more reliable for Overpass
       let response;
       try {
-        response = await fetch(`${url}?data=${encodeURIComponent(query)}`, {
-          headers: { "Accept": "application/json" },
-          signal: AbortSignal.timeout(8000)
+        response = await fetch(url, {
+          method: "POST",
+          body: "data=" + encodeURIComponent(query),
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          signal: AbortSignal.timeout(25000)
         });
       } catch (e) {
         response = null;
       }
 
-      // If GET failed or non-200, fallback to POST with 8s timeout
-      if (!response || !response.ok) {
-        response = await fetch(url, {
-          method: "POST",
-          body: "data=" + encodeURIComponent(query),
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-            "Accept": "application/json"
-          },
-          signal: AbortSignal.timeout(8000)
-        });
-      }
-      
       if (!response || !response.ok) {
         continue; // Try next mirror if HTTP error
       }
@@ -144,7 +135,7 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 10000) => {
     }
   }
 
-  // Fallback to location-relative simulated places if live OSM servers fail or timeout
-  return getPlacesNearLocation(lat, lon);
+  // Return empty array if live OSM servers fail or timeout
+  return [];
 };
 

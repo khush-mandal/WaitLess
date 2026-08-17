@@ -79,7 +79,7 @@ export const INITIAL_REPORTS = [
 export const INITIAL_PLACES = [
   {
     id: "place-1",
-    name: "The Roasted Bean",
+    name: "Bikaner Sweets & Restaurant",
     sector: "hospitality",
     category: "Coffee Shop • Hospitality",
     distance: "0.2 mi",
@@ -117,7 +117,7 @@ export const INITIAL_PLACES = [
   },
   {
     id: "place-2",
-    name: "Market Fresh",
+    name: "Main Market, Nilokheri",
     sector: "retail",
     category: "Grocery Store • Retail",
     distance: "1.2 mi",
@@ -157,7 +157,7 @@ export const INITIAL_PLACES = [
   },
   {
     id: "place-3",
-    name: "Metro Bank Main Branch",
+    name: "State Bank of India, Nilokheri",
     sector: "finance",
     category: "Bank • Finance",
     distance: "0.5 mi",
@@ -184,7 +184,7 @@ export const INITIAL_PLACES = [
   },
   {
     id: "place-4",
-    name: "Night Owl Club",
+    name: "Karnal Club & Lounge",
     sector: "entertainment",
     category: "Nightclub • Entertainment",
     distance: "2.1 mi",
@@ -210,7 +210,7 @@ export const INITIAL_PLACES = [
   },
   {
     id: "place-5",
-    name: "Quiet Corner Library",
+    name: "Govt. Polytechnic Library",
     sector: "education", // Custom sector for testing
     category: "Library • Public",
     distance: "0.4 mi",
@@ -233,7 +233,7 @@ export const INITIAL_PLACES = [
   },
   {
     id: "place-6",
-    name: "Oceanview Resort & Spa",
+    name: "Oasis Tourist Complex",
     sector: "entertainment",
     category: "Resort • Entertainment",
     distance: "1.2 mi",
@@ -256,7 +256,7 @@ export const INITIAL_PLACES = [
   {
     // TEST SCENARIO: Surge Cafe (Historically low, currently high)
     id: "place-7",
-    name: "Surge Cafe (Test Surge Logic)",
+    name: "Sethi Cafe (Surge Test)",
     sector: "hospitality",
     category: "Cafe • Hospitality",
     distance: "0.6 mi",
@@ -280,7 +280,7 @@ export const INITIAL_PLACES = [
   {
     // TEST SCENARIO: Missing historical data
     id: "place-8",
-    name: "City Health Clinic",
+    name: "Civil Hospital, Nilokheri",
     sector: "hospitality",
     category: "Healthcare • Hospitality",
     distance: "0.8 mi",
@@ -295,6 +295,50 @@ export const INITIAL_PLACES = [
     mapCoords: { xPercent: 35, yPercent: 55 },
     bestHours: "Mornings",
     hourlyCrowd: [], // Empty array tests the fallback logic in our estimation function
+  },
+  {
+    id: "place-9",
+    name: "Karnal Medical Center",
+    sector: "health",
+    category: "Hospital • Health",
+    distance: "1.5 mi",
+    address: "100 Wellness Way",
+    currentWaitMin: 25,
+    crowdLevel: "high",
+    statusLabel: "Busy",
+    confidence: 85,
+    reportsCount: 42,
+    updatedAt: Date.now() - 10 * 60000,
+    image: "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&q=80&w=400&h=300",
+    mapCoords: { xPercent: 45, yPercent: 40 },
+    bestHours: "Nights",
+    hourlyCrowd: [
+      { hour: "8 AM", densityPercent: 60, level: "medium" },
+      { hour: "12 PM", densityPercent: 85, level: "high" },
+      { hour: "4 PM", densityPercent: 70, level: "medium" },
+    ],
+  },
+  {
+    id: "place-10",
+    name: "Royal Cinemas",
+    sector: "entertainment",
+    category: "Theatre • Entertainment",
+    distance: "3.0 mi",
+    address: "55 Silver Screen Blvd",
+    currentWaitMin: 5,
+    crowdLevel: "low",
+    statusLabel: "Not Busy",
+    confidence: 92,
+    reportsCount: 15,
+    updatedAt: Date.now() - 20 * 60000,
+    image: "https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&q=80&w=400&h=300",
+    mapCoords: { xPercent: 65, yPercent: 20 },
+    bestHours: "Matinee",
+    hourlyCrowd: [
+      { hour: "1 PM", densityPercent: 20, level: "low" },
+      { hour: "7 PM", densityPercent: 90, level: "high" },
+      { hour: "10 PM", densityPercent: 75, level: "medium" },
+    ],
   },
 ];
 

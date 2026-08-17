@@ -225,30 +225,40 @@ export const MapView = ({
                 </p>
               </div>
 
-              {/* Status Badge */}
-              <div
-                className={`rounded-xl px-3.5 py-1.5 flex items-center gap-2 border ${
-                  activePlace.crowdLevel === "high"
-                    ? "bg-[#F44336]/10 border-[#F44336]/30 text-[#F44336]"
-                    : activePlace.crowdLevel === "medium"
-                    ? "bg-[#FFC107]/15 border-[#FFC107]/30 text-[#b08d00]"
-                    : "bg-[#4CAF50]/15 border-[#4CAF50]/30 text-[#4CAF50]"
-                }`}
-              >
-                <span className="material-symbols-outlined text-[18px]">
-                  {activePlace.crowdLevel === "high"
-                    ? "error"
-                    : activePlace.crowdLevel === "medium"
-                    ? "warning"
-                    : "check_circle"}
-                </span>
-                <div className="flex flex-col">
-                  <span className="font-bold text-[10px] uppercase tracking-wider">
-                    {activePlace.statusLabel}
+              {/* Status Badge & Confidence */}
+              <div className="flex items-center gap-2">
+                <div
+                  className={`rounded-xl px-3.5 py-1.5 flex items-center gap-2 border ${
+                    activePlace.crowdLevel === "high"
+                      ? "bg-[#F44336]/10 border-[#F44336]/30 text-[#F44336]"
+                      : activePlace.crowdLevel === "medium"
+                      ? "bg-[#FFC107]/15 border-[#FFC107]/30 text-[#b08d00]"
+                      : "bg-[#4CAF50]/15 border-[#4CAF50]/30 text-[#4CAF50]"
+                  }`}
+                >
+                  <span className="material-symbols-outlined text-[18px]">
+                    {activePlace.crowdLevel === "high"
+                      ? "error"
+                      : activePlace.crowdLevel === "medium"
+                      ? "warning"
+                      : "check_circle"}
                   </span>
-                  <span className="text-xs font-bold">
-                    {activePlace.currentWaitMin > 0 ? `${activePlace.currentWaitMin}m wait` : "0-5 min"}
-                  </span>
+                  <div className="flex flex-col">
+                    <span className="font-bold text-[10px] uppercase tracking-wider">
+                      {activePlace.statusLabel}
+                    </span>
+                    <span className="text-xs font-bold">
+                      {activePlace.currentWaitMin > 0 ? `${activePlace.currentWaitMin}m wait` : "0-5 min"}
+                    </span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col justify-center bg-[#004d40]/10 border border-[#004d40]/20 text-[#00342b] px-3 py-1 rounded-xl shadow-sm self-stretch h-auto">
+                  <div className="flex items-center gap-1">
+                    <span className="material-symbols-outlined text-[14px]">verified</span>
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider">Score</span>
+                  </div>
+                  <span className="text-xs font-bold text-center">{activePlace.confidence || 85}%</span>
                 </div>
               </div>
             </div>
