@@ -94,11 +94,13 @@ function AppMain() {
       const lat = userLocation ? userLocation.latitude : 28.6139;
       const lon = userLocation ? userLocation.longitude : 77.2090;
 
-      // Immediately generate fallback places relative to user location if empty
-      const fallbackPlaces = getPlacesNearLocation(lat, lon);
+      // Immediately recalculate places relative to user location
+      const updatedFallback = getPlacesNearLocation(lat, lon);
+      
       setPlaces(prevPlaces => {
-        if (prevPlaces.length === 0) return fallbackPlaces;
-        return prevPlaces;
+        if (!prevPlaces || prevPlaces.length === 0) return updatedFallback;
+        const osmPlaces = prevPlaces.filter(p => p.id && p.id.startsWith('osm-'));
+        return [...updatedFallback, ...osmPlaces];
       });
 
       setServerStatus("Fetching nearby real places...");
@@ -106,18 +108,18 @@ function AppMain() {
       
       fetchNearbyPlaces(lat, lon, 10000).then((realPlaces) => {
         if (realPlaces && realPlaces.length > 0) {
-          setPlaces(prevPlaces => {
-            const nonOsmPlaces = prevPlaces.filter(p => p.id && !p.id.startsWith('osm-'));
-            return [...nonOsmPlaces, ...realPlaces];
+          setPlaces(() => {
+            const currentFallback = getPlacesNearLocation(lat, lon);
+            return [...currentFallback, ...realPlaces];
           });
           setServerStatus(`Loaded ${realPlaces.length} real places nearby!`);
         } else {
-          setPlaces(prevPlaces => prevPlaces.length > 0 ? prevPlaces : fallbackPlaces);
+          setPlaces(getPlacesNearLocation(lat, lon));
           setServerStatus("Showing nearby places");
         }
         setTimeout(() => setShowServerStatus(false), 5000);
       }).catch(err => {
-        setPlaces(prevPlaces => prevPlaces.length > 0 ? prevPlaces : fallbackPlaces);
+        setPlaces(getPlacesNearLocation(lat, lon));
       });
     }
   }, [userLocation, locationLoading]);
