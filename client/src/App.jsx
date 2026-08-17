@@ -88,6 +88,9 @@ function AppMain() {
       });
   }, []);
 
+  const [locationToast, setLocationToast] = useState("");
+  const [showLocationToast, setShowLocationToast] = useState(false);
+
   // Nilokheri, Karnal fallback coordinates
   const NILOKHERI_LAT = 29.8339;
   const NILOKHERI_LON = 76.9201;
@@ -128,7 +131,11 @@ function AppMain() {
               // Successfully fetched real places around user location
               const fallbackUser = getPlacesNearLocation(userLat, userLon);
               setPlaces([...fallbackUser, ...realPlaces]);
-              setServerStatus(`Loaded ${realPlaces.length} real places near you!`);
+              const msg = "Updated places according to your location";
+              setServerStatus(msg);
+              setLocationToast(msg);
+              setShowLocationToast(true);
+              setTimeout(() => setShowLocationToast(false), 6000);
             } else {
               // No places found around user location -> Fallback to Nilokheri, Karnal
               console.warn("No places found near user location. Falling back to Nilokheri, Karnal.");
@@ -279,8 +286,30 @@ function AppMain() {
   return (
     <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
     {showServerStatus && (
-      <div style={{ background: serverStatus.includes('Connected') || serverStatus.includes('Loaded') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
+      <div style={{ background: serverStatus.includes('Updated places') || serverStatus.includes('Connected') || serverStatus.includes('Loaded') ? '#059669' : '#F44336', color: '#fff', fontSize: '11px', fontWeight: 'bold', textAlign: 'center', padding: '6px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
         {serverStatus}
+      </div>
+    )}
+
+    {/* Green Location Success Toast */}
+    {showLocationToast && (
+      <div className="fixed top-16 left-1/2 -translate-x-1/2 z-[10001] max-w-md w-[92%] bg-[#059669] text-white px-4 py-3 rounded-2xl shadow-2xl border border-emerald-300/40 flex items-center justify-between gap-3 animate-slide-up">
+        <div className="flex items-center gap-2.5">
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+          </span>
+          <span className="material-symbols-outlined text-[20px] text-white">my_location</span>
+          <span className="text-xs font-bold tracking-wide">
+            {locationToast}
+          </span>
+        </div>
+        <button
+          onClick={() => setShowLocationToast(false)}
+          className="text-white/80 hover:text-white p-1 flex items-center justify-center"
+        >
+          <span className="material-symbols-outlined text-[18px]">close</span>
+        </button>
       </div>
     )}
     {
