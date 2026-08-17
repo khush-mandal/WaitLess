@@ -46,8 +46,8 @@ export const MapView = ({
   const [activePlace, setActivePlace] = useState(null);
   const [mapCenter, setMapCenter] = useState(null);
 
-  // Default center if no location (e.g. Times Square)
-  const defaultCenter = [40.7580, -73.9855];
+  // Default center if no location (Nilokheri, Karnal)
+  const defaultCenter = [29.8370, 76.9170];
   const center = mapCenter || (userLocation ? [userLocation.latitude, userLocation.longitude] : defaultCenter);
 
   const filterCategory = (sector) => {

@@ -91,8 +91,8 @@ function AppMain() {
   // Fetch real places when location is resolved (or update nearby fallback)
   useEffect(() => {
     if (!locationLoading) {
-      const lat = userLocation ? userLocation.latitude : 28.6139;
-      const lon = userLocation ? userLocation.longitude : 77.2090;
+      const lat = userLocation ? userLocation.latitude : 29.8370;
+      const lon = userLocation ? userLocation.longitude : 76.9170;
 
       // Immediately recalculate places relative to user location
       const updatedFallback = getPlacesNearLocation(lat, lon);
