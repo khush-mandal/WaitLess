@@ -12,18 +12,18 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 10000) => {
   
   for (const url of endpoints) {
     try {
-      // First try GET request with 3s timeout
+      // First try GET request with 8s timeout
       let response;
       try {
         response = await fetch(`${url}?data=${encodeURIComponent(query)}`, {
           headers: { "Accept": "application/json" },
-          signal: AbortSignal.timeout(3000)
+          signal: AbortSignal.timeout(8000)
         });
       } catch (e) {
         response = null;
       }
 
-      // If GET failed or non-200, fallback to POST with 3s timeout
+      // If GET failed or non-200, fallback to POST with 8s timeout
       if (!response || !response.ok) {
         response = await fetch(url, {
           method: "POST",
@@ -32,7 +32,7 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 10000) => {
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
             "Accept": "application/json"
           },
-          signal: AbortSignal.timeout(3000)
+          signal: AbortSignal.timeout(8000)
         });
       }
       

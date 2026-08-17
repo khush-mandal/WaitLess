@@ -71,7 +71,7 @@ function AppMain() {
   const [unreadNotifications, setUnreadNotifications] = useState(true);
   const [showNotificationToast, setShowNotificationToast] = useState(false);
   const [serverStatus, setServerStatus] = useState("Checking server...");
-  const [showServerStatus, setShowServerStatus] = useState(true);
+  const [showServerStatus, setShowServerStatus] = useState(false);
   const [showLogin, setShowLogin] = useState(() => {
     return window.location.pathname === '/signup' || window.location.pathname === '/login';
   });
@@ -97,21 +97,21 @@ function AppMain() {
 
   const loadNilokheriFallback = () => {
     setServerStatus("Showing places in Nilokheri, Karnal");
-    setShowServerStatus(true);
     const nilokheriSpots = getPlacesNearLocation(NILOKHERI_LAT, NILOKHERI_LON);
-    setPlaces(nilokheriSpots);
 
     // Fetch real OpenStreetMap places in Nilokheri, Karnal
     fetchNearbyPlaces(NILOKHERI_LAT, NILOKHERI_LON, 15000)
       .then((realPlaces) => {
-        if (realPlaces && realPlaces.length > 0) {
-          setPlaces([...nilokheriSpots, ...realPlaces]);
-          setServerStatus(`Loaded ${realPlaces.length} places in Nilokheri, Karnal`);
-        }
-        setTimeout(() => setShowServerStatus(false), 5000);
+        const combined = (realPlaces && realPlaces.length > 0) ? [...realPlaces, ...nilokheriSpots] : nilokheriSpots;
+        const uniqueMap = new Map();
+        combined.forEach((place) => {
+          const key = (place.name || place.id || "").toLowerCase();
+          if (!uniqueMap.has(key)) uniqueMap.set(key, place);
+        });
+        setPlaces(Array.from(uniqueMap.values()));
       })
       .catch(() => {
-        setTimeout(() => setShowServerStatus(false), 5000);
+        setPlaces(nilokheriSpots);
       });
   };
 
@@ -123,29 +123,29 @@ function AppMain() {
         const userLon = userLocation.longitude;
 
         setServerStatus("Fetching nearby places around your location...");
-        setShowServerStatus(true);
 
         fetchNearbyPlaces(userLat, userLon, 10000)
           .then((realPlaces) => {
-            if (realPlaces && realPlaces.length > 0) {
-              // Successfully fetched real places around user location
-              const fallbackUser = getPlacesNearLocation(userLat, userLon);
-              setPlaces([...fallbackUser, ...realPlaces]);
-              const msg = "Updated places according to your location";
-              setServerStatus(msg);
-              setLocationToast(msg);
-              setShowLocationToast(true);
-              setTimeout(() => setShowLocationToast(false), 6000);
-            } else {
-              // No places found around user location -> Fallback to Nilokheri, Karnal
-              console.warn("No places found near user location. Falling back to Nilokheri, Karnal.");
-              loadNilokheriFallback();
-            }
-            setTimeout(() => setShowServerStatus(false), 5000);
+            const fallbackUser = getPlacesNearLocation(userLat, userLon);
+            const combined = (realPlaces && realPlaces.length > 0) ? [...realPlaces, ...fallbackUser] : fallbackUser;
+            
+            // Deduplicate to avoid duplicate spots
+            const uniqueMap = new Map();
+            combined.forEach((place) => {
+              const key = (place.name || place.id || "").toLowerCase();
+              if (!uniqueMap.has(key)) uniqueMap.set(key, place);
+            });
+            const deduplicated = Array.from(uniqueMap.values());
+
+            setPlaces(deduplicated);
+            const msg = "Updated places according to your location";
+            setServerStatus(msg);
+            setLocationToast(msg);
+            setShowLocationToast(true);
+            setTimeout(() => setShowLocationToast(false), 5000);
           })
           .catch((err) => {
             console.error("Error fetching places near user location:", err);
-            // Error finding places -> Fallback to Nilokheri, Karnal
             loadNilokheriFallback();
           });
       } else {
@@ -266,11 +266,6 @@ function AppMain() {
   if (!isUserAuth) {
     return (
       <>
-        {showServerStatus && (
-          <div style={{ background: serverStatus.includes('Connected') || serverStatus.includes('Loaded') ? '#00342b' : '#F44336', color: '#fff', fontSize: '11px', textAlign: 'center', padding: '4px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
-            {serverStatus}
-          </div>
-        )}
         {!showLogin ? (
           <LandingView onGetStarted={handleLoginSuccess} />
         ) : (
@@ -292,11 +287,6 @@ function AppMain() {
 
   return (
     <div className="min-h-screen mesh-bg text-[#191c1b] flex flex-col font-[#Inter] selection:bg-[#afefdd] selection:text-[#00201a]">
-    {showServerStatus && (
-      <div style={{ background: serverStatus.includes('Updated places') || serverStatus.includes('Connected') || serverStatus.includes('Loaded') ? '#059669' : '#F44336', color: '#fff', fontSize: '11px', fontWeight: 'bold', textAlign: 'center', padding: '6px', position: 'fixed', top: 0, left: 0, right: 0, zIndex: 10000 }}>
-        {serverStatus}
-      </div>
-    )}
 
     {/* Green Location Success Toast */}
     {showLocationToast && (
