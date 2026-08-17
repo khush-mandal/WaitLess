@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 import { useState, useEffect } from "react";
-import { INITIAL_PLACES, INITIAL_REPORTS, INITIAL_USER_PROFILE } from "./data/initialData";
+import { INITIAL_PLACES, INITIAL_REPORTS, INITIAL_USER_PROFILE, getPlacesNearLocation } from "./data/initialData";
 import { estimateWaitTime } from "./utils/waitEstimation";
 import { Header } from "./components/Header";
 import { BottomNav } from "./components/BottomNav";
@@ -29,7 +29,7 @@ function AppMain() {
     const saved = localStorage.getItem("waitless_places_v2");
     if (saved) {
       const parsed = JSON.parse(saved);
-      return parsed.filter(p => p.id && p.id.startsWith('osm-'));
+      if (parsed.length > 0) return parsed;
     }
     return [];
   });
@@ -88,11 +88,18 @@ function AppMain() {
       });
   }, []);
 
-  // Fetch real places when location is resolved (either successfully or failed)
+  // Fetch real places when location is resolved (or update nearby fallback)
   useEffect(() => {
     if (!locationLoading) {
-      const lat = userLocation ? userLocation.latitude : 40.7580; // default to NYC
-      const lon = userLocation ? userLocation.longitude : -73.9855;
+      const lat = userLocation ? userLocation.latitude : 28.6139;
+      const lon = userLocation ? userLocation.longitude : 77.2090;
+
+      // Immediately generate fallback places relative to user location if empty
+      const fallbackPlaces = getPlacesNearLocation(lat, lon);
+      setPlaces(prevPlaces => {
+        if (prevPlaces.length === 0) return fallbackPlaces;
+        return prevPlaces;
+      });
 
       setServerStatus("Fetching nearby real places...");
       setShowServerStatus(true);
@@ -105,12 +112,16 @@ function AppMain() {
           });
           setServerStatus(`Loaded ${realPlaces.length} real places nearby!`);
         } else {
-          setServerStatus("No nearby places found.");
+          setPlaces(prevPlaces => prevPlaces.length > 0 ? prevPlaces : fallbackPlaces);
+          setServerStatus("Showing nearby places");
         }
         setTimeout(() => setShowServerStatus(false), 5000);
+      }).catch(err => {
+        setPlaces(prevPlaces => prevPlaces.length > 0 ? prevPlaces : fallbackPlaces);
       });
     }
   }, [userLocation, locationLoading]);
+
 
   useEffect(() => {
     localStorage.setItem("waitless_places_v2", JSON.stringify(places));

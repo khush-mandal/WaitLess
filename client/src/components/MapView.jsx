@@ -20,6 +20,19 @@ const MapUpdater = ({ center }) => {
   return null;
 };
 
+// Custom User Location Pulsing Blue Icon
+const userLocationIcon = L.divIcon({
+  className: 'user-location-pulse-marker',
+  html: `
+    <div style="position: relative; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+      <div style="position: absolute; width: 24px; height: 24px; background: rgba(0, 150, 255, 0.4); border-radius: 50%; animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;"></div>
+      <div style="width: 14px; height: 14px; background: #007AFF; border: 2px solid white; border-radius: 50%; box-shadow: 0 2px 6px rgba(0,0,0,0.4); z-index: 2;"></div>
+    </div>
+  `,
+  iconSize: [24, 24],
+  iconAnchor: [12, 12],
+});
+
 export const MapView = ({
   places,
   onSelectPlace,
@@ -31,19 +44,25 @@ export const MapView = ({
   userLocation,
 }) => {
   const [activePlace, setActivePlace] = useState(null);
+  const [mapCenter, setMapCenter] = useState(null);
 
   // Default center if no location (e.g. Times Square)
   const defaultCenter = [40.7580, -73.9855];
-  const center = userLocation ? [userLocation.latitude, userLocation.longitude] : defaultCenter;
+  const center = mapCenter || (userLocation ? [userLocation.latitude, userLocation.longitude] : defaultCenter);
 
   const filterCategory = (sector) => {
     setSelectedSector(sector);
   };
 
+  const handleLocateMe = () => {
+    if (userLocation) {
+      setMapCenter([userLocation.latitude, userLocation.longitude]);
+    }
+  };
+
   const filteredPlaces = places.filter((place) => {
     const matchesSector = selectedSector === "all" || place.sector === selectedSector;
     const matchesQuery = searchQuery === "" || place.name.toLowerCase().includes(searchQuery.toLowerCase()) || place.category.toLowerCase().includes(searchQuery.toLowerCase());
-    // Only show places that have real coordinates for the map
     return matchesSector && matchesQuery && place.lat && place.lon;
   });
 
@@ -65,8 +84,8 @@ export const MapView = ({
           
           {/* User Location Marker */}
           {userLocation && (
-            <Marker position={[userLocation.latitude, userLocation.longitude]}>
-              <Popup>You are here</Popup>
+            <Marker position={[userLocation.latitude, userLocation.longitude]} icon={userLocationIcon}>
+              <Popup>📍 <strong>Your Live Location</strong></Popup>
             </Marker>
           )}
 
@@ -77,7 +96,6 @@ export const MapView = ({
             if (place.crowdLevel === "high") iconColor = "#F44336"; // Red
             else if (place.crowdLevel === "medium") iconColor = "#FFC107"; // Yellow
 
-            // Create a custom HTML icon for the marker
             const customIcon = L.divIcon({
               className: 'custom-leaflet-marker',
               html: `<div style="
@@ -109,6 +127,17 @@ export const MapView = ({
           })}
         </MapContainer>
       </div>
+
+      {/* Floating Recenter Location Button */}
+      {userLocation && (
+        <button
+          onClick={handleLocateMe}
+          className="absolute right-5 bottom-24 md:bottom-28 z-30 bg-white hover:bg-gray-50 text-[#00342b] p-3 rounded-full shadow-lg border border-white/60 transition-transform active:scale-95 flex items-center justify-center pointer-events-auto"
+          title="Recenter on My Location"
+        >
+          <span className="material-symbols-outlined text-[22px]">my_location</span>
+        </button>
+      )}
 
       {/* Top Floating Controls */}
       <div className="relative z-20 pt-4 px-5 max-w-2xl mx-auto w-full flex flex-col gap-2.5 pointer-events-auto">

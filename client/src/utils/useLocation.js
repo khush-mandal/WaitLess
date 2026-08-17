@@ -12,21 +12,41 @@ export const useLocation = () => {
       return;
     }
 
+    const handleSuccess = (position) => {
+      setLocation({
+        latitude: position.coords.latitude,
+        longitude: position.coords.longitude,
+        accuracy: position.coords.accuracy,
+      });
+      setError(null);
+      setLoading(false);
+    };
+
+    const handleError = (err) => {
+      console.warn("Geolocation error:", err);
+      setError(err.message);
+      setLoading(false);
+    };
+
+    // First fast position request
     navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-        setLoading(false);
-      },
-      (err) => {
-        setError(err.message);
-        setLoading(false);
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      handleSuccess,
+      handleError,
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
     );
+
+    // Watch position for continuous live updates
+    const watchId = navigator.geolocation.watchPosition(
+      handleSuccess,
+      (err) => console.warn("Watch position error:", err),
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+    };
   }, []);
 
   return { location, error, loading };
 };
+

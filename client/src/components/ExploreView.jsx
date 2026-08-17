@@ -45,9 +45,19 @@ export const ExploreView = ({
       return waitA - waitB;
     });
   } else if (sortBy === "distance") {
-    const parseDistance = (d) => parseFloat(d) || 0;
-    result.sort((a, b) => parseDistance(a.distance) - parseDistance(b.distance));
+    const getKm = (place) => {
+      if (typeof place.rawDistanceKm === 'number') return place.rawDistanceKm;
+      if (!place.distance) return 9999;
+      const num = parseFloat(place.distance) || 0;
+      if (place.distance.includes("m away") || place.distance.endsWith("m")) {
+        return place.distance.includes("km") ? num : num / 1000;
+      }
+      if (place.distance.includes("mi")) return num * 1.60934;
+      return num;
+    };
+    result.sort((a, b) => getKm(a) - getKm(b));
   }
+
 
   const filteredPlaces = result;
   return <div className="mesh-bg min-h-screen pt-20 pb-28 px-5">
