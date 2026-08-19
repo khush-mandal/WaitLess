@@ -42,6 +42,7 @@ export const MapView = ({
   setSearchQuery,
   onOpenReportModal,
   userLocation,
+  locationError
 }) => {
   const [activePlace, setActivePlace] = useState(null);
   const [mapCenter, setMapCenter] = useState(null);
@@ -68,6 +69,21 @@ export const MapView = ({
 
   return (
     <div className="relative w-full h-[calc(100vh-64px)] flex flex-col">
+      {locationError && !userLocation && (
+        <div className="absolute inset-0 z-[1000] bg-white/80 backdrop-blur-sm flex items-center justify-center p-5">
+          <div className="glass-card p-8 rounded-2xl flex flex-col items-center justify-center text-center border border-[#F44336]/30 bg-white/95 max-w-sm w-full shadow-2xl">
+            <span className="material-symbols-outlined text-[48px] text-[#F44336] mb-4 opacity-80">location_off</span>
+            <h3 className="font-extrabold text-xl text-[#191c1b] mb-2">Location Access Required</h3>
+            <p className="text-sm text-[#3f4945] mb-6">
+              WaitLess needs your location to show real-time crowds and wait times on the map. Please enable location access.
+            </p>
+            <button onClick={() => window.location.reload()} className="bg-[#004d40] text-white px-6 py-2.5 rounded-full font-bold shadow-md hover:bg-[#00342b] transition-colors">
+              Retry
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Map Layer */}
       <div className="absolute inset-0 z-0">
         <MapContainer 

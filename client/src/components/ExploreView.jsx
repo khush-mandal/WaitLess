@@ -9,7 +9,8 @@ export const ExploreView = ({
   setSearchQuery,
   onSelectPlace,
   onOpenReportModal,
-  onNavigateToReports
+  onNavigateToReports,
+  locationError
 }) => {
   const [sortBy, setSortBy] = useState("default");
   const [filterOpenNow, setFilterOpenNow] = useState(false);
@@ -236,6 +237,15 @@ export const ExploreView = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {filteredPlaces.length === 0 && locationError && (
+              <div className="col-span-full glass-card p-8 rounded-2xl flex flex-col items-center justify-center text-center border border-white/60 my-4">
+                <span className="material-symbols-outlined text-[48px] text-[#F44336] mb-4 opacity-80">location_off</span>
+                <h3 className="font-extrabold text-xl text-[#191c1b] mb-2">Location Access Required</h3>
+                <p className="text-sm text-[#3f4945] max-w-md mx-auto mb-6">
+                  WaitLess needs your location to show real-time crowds and wait times for places near you. Please enable location access in your browser or device settings.
+                </p>
+              </div>
+            )}
             {filteredPlaces.map((place) => {
     const isUnknown = place.crowdLevel === "unknown";
     if (isUnknown) {
