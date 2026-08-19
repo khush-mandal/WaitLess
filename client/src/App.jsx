@@ -91,29 +91,7 @@ function AppMain() {
   const [locationToast, setLocationToast] = useState("");
   const [showLocationToast, setShowLocationToast] = useState(false);
 
-  // Nilokheri, Karnal fallback coordinates
-  const NILOKHERI_LAT = 29.8339;
-  const NILOKHERI_LON = 76.9201;
-
-  const loadNilokheriFallback = () => {
-    setServerStatus("Showing places in Nilokheri, Karnal");
-    const nilokheriSpots = getPlacesNearLocation(NILOKHERI_LAT, NILOKHERI_LON);
-
-    // Fetch real OpenStreetMap places in Nilokheri, Karnal
-    fetchNearbyPlaces(NILOKHERI_LAT, NILOKHERI_LON, 15000)
-      .then((realPlaces) => {
-        if (realPlaces && realPlaces.length > 0) {
-          setPlaces(realPlaces);
-        } else {
-          setPlaces(nilokheriSpots);
-        }
-      })
-      .catch(() => {
-        setPlaces(nilokheriSpots);
-      });
-  };
-
-  // Fetch real places when location is resolved (or fallback to Nilokheri, Karnal)
+  // Fetch real places when location is resolved
   useEffect(() => {
     if (!locationLoading) {
       if (userLocation && userLocation.latitude && userLocation.longitude) {
@@ -132,20 +110,22 @@ function AppMain() {
               setShowLocationToast(true);
               setTimeout(() => setShowLocationToast(false), 5000);
             } else {
-              setServerStatus("Live map data unavailable. Showing simulated nearby places.");
-              setLocationToast("Live data timeout. Showing simulated places.");
+              setServerStatus("Live map data unavailable.");
+              setLocationToast("Could not find real places nearby.");
               setShowLocationToast(true);
               setTimeout(() => setShowLocationToast(false), 5000);
-              loadNilokheriFallback();
             }
           })
           .catch((err) => {
             console.error("Error fetching places near user location:", err);
-            loadNilokheriFallback();
+            setServerStatus("Error fetching map data.");
           });
       } else {
-        // Location not enabled or denied -> Fallback to Nilokheri, Karnal
-        loadNilokheriFallback();
+        // Location not enabled or denied
+        setServerStatus("Location access required to fetch nearby places.");
+        setLocationToast("Please enable location access.");
+        setShowLocationToast(true);
+        setTimeout(() => setShowLocationToast(false), 5000);
       }
     }
   }, [userLocation, locationLoading]);
@@ -347,6 +327,7 @@ function AppMain() {
         setSearchQuery={setSearchQuery}
         onOpenReportModal={(placeId) => handleOpenReportModal(placeId)}
         userLocation={userLocation}
+        locationError={!userLocation && !locationLoading}
       /> : <ExploreView
         places={places}
         userProfile={userProfile}
@@ -357,6 +338,7 @@ function AppMain() {
         onSelectPlace={(place) => setSelectedPlace(place)}
         onOpenReportModal={(placeId) => handleOpenReportModal(placeId)}
         onNavigateToReports={() => setActiveTab("reports")}
+        locationError={!userLocation && !locationLoading}
       /> : activeTab === "reports" ? <ReportsView
         userProfile={userProfile}
         userReports={userReports}
