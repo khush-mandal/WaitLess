@@ -32,9 +32,7 @@ export const ReportModal = ({
   }
           <div className="flex items-center justify-between pb-4 border-b border-white/40">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-[#00342b] text-[24px]">
-                bubble_chart
-              </span>
+              <img src="/logo.svg" alt="WaitLess Logo" className="w-8 h-8 rounded-md" />
               <h2 className="font-extrabold text-[#00342b] text-xl">WaitLess</h2>
             </div>
             <button

@@ -25,6 +25,7 @@ WaitLess/
 ## Tech Stack
 
 - **Frontend:** React 19, Vite, Vite PWA Plugin, Vanilla CSS (Design System Tokens).
+- **Mapping & Location:** Leaflet, React Leaflet, Browser Geolocation API, Overpass API (OSM) / Foursquare API for Place data.
 - **Backend:** Node.js, Express.js, CORS.
 - **Design System:** 
   - *Typography:* Space Grotesk (Display), Inter (Body), JetBrains Mono (Data/Metrics).
@@ -59,10 +60,11 @@ npm run dev
 ## Core Features & Screens
 
 1. **Splash Screen** — Entry point with the WaitLess brand and tagline.
-2. **Home** — Search functionality, browse by sector (hospitality, finance, retail, entertainment), and view live nearby previews.
-3. **Nearby List** — View places with live crowd badges, estimated wait times, and confidence scores.
-4. **Place Details** — Get deep insights on estimated wait ranges, best-time-to-visit, and a smart lower-wait alternative recommendation.
-5. **Report Crowd** — One-tap reporting interface to submit live crowd levels (Low / Medium / High), instantly updating the global live data status.
+2. **Real-time Location & Map** — Uses device geolocation and Leaflet maps to plot nearby points of interest via real-world APIs (Overpass/Foursquare).
+3. **Category Filtering** — Browse nearby places by dynamically filtering categories (e.g., Food, Entertainment, Shopping).
+4. **Nearby List & Predictions** — View places with live crowd badges, estimated wait times, and confidence scores.
+5. **Place Details** — Get deep insights on estimated wait ranges, best-time-to-visit, and a smart lower-wait alternative recommendation.
+6. **Report Crowd** — One-tap reporting interface to submit live crowd levels (Low / Medium / High), instantly updating the global live data status.
 
 ## Core Design Philosophy
 

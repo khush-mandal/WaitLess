@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 export const ExploreView = ({
   places,
   userProfile,
@@ -7,8 +9,12 @@ export const ExploreView = ({
   setSearchQuery,
   onSelectPlace,
   onOpenReportModal,
-  onNavigateToReports
+  onNavigateToReports,
+  locationError
 }) => {
+  const [sortBy, setSortBy] = useState("default");
+  const [filterOpenNow, setFilterOpenNow] = useState(false);
+
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return 'Updated recently';
     const diff = Date.now() - timestamp;
@@ -20,11 +26,41 @@ export const ExploreView = ({
     return `Updated ${Math.floor(hours / 24)}d ago`;
   };
 
-  const filteredPlaces = places.filter((place) => {
+  let result = places.filter((place) => {
     const matchesSector = selectedSector === "all" || place.sector === selectedSector;
-    const matchesQuery = searchQuery === "" || place.name.toLowerCase().includes(searchQuery.toLowerCase()) || place.category.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSector && matchesQuery;
+    const matchesQuery = searchQuery === "" || 
+      (place.name && place.name.toLowerCase().includes(searchQuery.toLowerCase())) || 
+      (place.category && place.category.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    // For now, we assume all mock places are open if they don't have isOpen explicitly false.
+    // If we have actual isOpen data, we use it.
+    const matchesOpenNow = filterOpenNow ? place.isOpen !== false : true; 
+    
+    return matchesSector && matchesQuery && matchesOpenNow;
   });
+
+  if (sortBy === "wait_time") {
+    result.sort((a, b) => {
+      const waitA = a.currentWaitMin === -1 ? 9999 : (a.currentWaitMin || 0);
+      const waitB = b.currentWaitMin === -1 ? 9999 : (b.currentWaitMin || 0);
+      return waitA - waitB;
+    });
+  } else if (sortBy === "distance") {
+    const getKm = (place) => {
+      if (typeof place.rawDistanceKm === 'number') return place.rawDistanceKm;
+      if (!place.distance) return 9999;
+      const num = parseFloat(place.distance) || 0;
+      if (place.distance.includes("m away") || place.distance.endsWith("m")) {
+        return place.distance.includes("km") ? num : num / 1000;
+      }
+      if (place.distance.includes("mi")) return num * 1.60934;
+      return num;
+    };
+    result.sort((a, b) => getKm(a) - getKm(b));
+  }
+
+
+  const filteredPlaces = result;
   return <div className="mesh-bg min-h-screen pt-20 pb-28 px-5">
       <main className="max-w-7xl mx-auto space-y-6">
         {
@@ -155,30 +191,33 @@ export const ExploreView = ({
         <section className="animate-slide-up delay-300">
           <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
             <button
-    onClick={() => setSelectedSector("all")}
-    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all ${selectedSector === "all" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+    onClick={() => { setSortBy("default"); setFilterOpenNow(false); setSelectedSector("all"); }}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1.5 transition-all ${(sortBy === "default" && !filterOpenNow && selectedSector === "all") ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
   >
               <span className="material-symbols-outlined text-[15px]">tune</span>
               Filters
             </button>
 
             <button
-    onClick={() => setSelectedSector("hospitality")}
-    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${selectedSector === "hospitality" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+    onClick={() => setSortBy(sortBy === "wait_time" ? "default" : "wait_time")}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${sortBy === "wait_time" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
   >
               Wait Time
               <span className="material-symbols-outlined text-[15px]">arrow_drop_down</span>
             </button>
 
             <button
-    onClick={() => setSelectedSector("retail")}
-    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${selectedSector === "retail" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+    onClick={() => setSortBy(sortBy === "distance" ? "default" : "distance")}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap flex items-center gap-1 transition-all ${sortBy === "distance" ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
   >
               Distance
               <span className="material-symbols-outlined text-[15px]">arrow_drop_down</span>
             </button>
 
-            <button className="px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap glass-card text-[#3f4945] hover:bg-white transition-all">
+            <button
+    onClick={() => setFilterOpenNow(!filterOpenNow)}
+    className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all ${filterOpenNow ? "bg-[#004d40] text-white shadow-sm" : "glass-card text-[#3f4945] hover:bg-white"}`}
+  >
               Open Now
             </button>
           </div>
@@ -198,11 +237,21 @@ export const ExploreView = ({
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {filteredPlaces.length === 0 && locationError && (
+              <div className="col-span-full glass-card p-8 rounded-2xl flex flex-col items-center justify-center text-center border border-white/60 my-4">
+                <span className="material-symbols-outlined text-[48px] text-[#F44336] mb-4 opacity-80">location_off</span>
+                <h3 className="font-extrabold text-xl text-[#191c1b] mb-2">Location Access Required</h3>
+                <p className="text-sm text-[#3f4945] max-w-md mx-auto mb-6">
+                  WaitLess needs your location to show real-time crowds and wait times for places near you. Please enable location access in your browser or device settings.
+                </p>
+              </div>
+            )}
             {filteredPlaces.map((place) => {
     const isUnknown = place.crowdLevel === "unknown";
     if (isUnknown) {
       return <div
         key={place.id}
+        onClick={() => onSelectPlace(place)}
         className="glass-card rounded-2xl p-5 flex flex-col justify-between border-dashed border-2 border-white/60 bg-white/30 hover:bg-white/50 transition-all cursor-pointer group"
       >
                     <div>

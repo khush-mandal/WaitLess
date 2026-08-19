@@ -1,299 +1,68 @@
 export const INITIAL_USER_PROFILE = {
-  name: "Alex Rivera",
-  level: "Time Saver Level 4",
-  avatarUrl: "https://lh3.googleusercontent.com/aida-public/AB6AXuBASuhrxIQiJVaG9kupDlWIQBkpO64G82MtF0Ek9yaSGUw5MvxFI--_N92mftJgpKCsqG5hcKNfKG01wzjBI9f0LzfQBbjvcvETe7HfKFZtpFRVyMag7WqvXZcy_Hh-eHFH739ROPXSpgT0cQpp0jqAi88aV5SI4bIAAXiUiDz_fRfF4OKRZQom1X-U7iOWMNU0wQPtHlGl-wxiN-dQgGFBqK9ulkllZfsA9JSaQMTL0dU7sUMek82CgQ",
-  totalPoints: 450,
-  weeklyPoints: 50,
-  reportsThisWeek: 5,
-  totalReports: 15,
-  timeSavedHours: "2h 15m",
-  peopleHelped: 1200,
-  impactScore: 92,
-  communityRank: "Top 5%",
-  savedHoursNumber: 14,
+  name: "Guest",
+  level: "Beginner",
+  avatarUrl: "",
+  totalPoints: 0,
+  weeklyPoints: 0,
+  reportsThisWeek: 0,
+  totalReports: 0,
+  timeSavedHours: "0h 0m",
+  peopleHelped: 0,
+  impactScore: 0,
+  communityRank: "Unranked",
+  savedHoursNumber: 0,
 };
 
 export const INITIAL_BUSINESS_PROFILE = {
-  businessName: "The Roasted Bean",
-  managerName: "Sarah Jenkins",
-  plan: "Pro Analytics",
-  totalCheckinsToday: 142,
-  averageWaitTimeToday: 8,
-  peakHourToday: "10 AM",
-  customerSatisfaction: 94, // out of 100
+  businessName: "Your Business",
+  managerName: "Manager",
+  plan: "Free",
+  totalCheckinsToday: 0,
+  averageWaitTimeToday: 0,
+  peakHourToday: "-",
+  customerSatisfaction: 0, // out of 100
 };
 
-export const INITIAL_REPORTS = [
-  {
-    id: "rep-1",
-    placeId: "place-1",
-    placeName: "The Roasted Bean",
-    sector: "hospitality",
-    crowdLevel: "low",
-    timestamp: "10 mins ago",
-    pointsEarned: 10,
-    iconName: "storefront",
-  },
-  {
-    id: "rep-2",
-    placeId: "place-2",
-    placeName: "Market Fresh",
-    sector: "retail",
-    crowdLevel: "high",
-    timestamp: "1 hour ago",
-    pointsEarned: 10,
-    iconName: "shopping_cart",
-  },
-  {
-    id: "rep-3",
-    placeId: "place-3",
-    placeName: "Metro Bank Main Branch",
-    sector: "finance",
-    crowdLevel: "medium",
-    timestamp: "3 hours ago",
-    pointsEarned: 15,
-    iconName: "account_balance",
-  },
-  {
-    id: "rep-4",
-    placeId: "place-8",
-    placeName: "City Health Clinic",
-    sector: "hospitality",
-    crowdLevel: "high",
-    timestamp: "5 hours ago",
-    pointsEarned: 10,
-    iconName: "local_hospital",
-  },
-  {
-    id: "rep-5",
-    placeId: "place-6",
-    placeName: "Oceanview Resort & Spa",
-    sector: "entertainment",
-    crowdLevel: "low",
-    timestamp: "Yesterday",
-    pointsEarned: 15,
-    iconName: "pool",
-  },
-];
+export const INITIAL_REPORTS = [];
 
-export const INITIAL_PLACES = [
-  {
-    id: "place-1",
-    name: "The Roasted Bean",
-    sector: "hospitality",
-    category: "Coffee Shop • Hospitality",
-    distance: "0.2 mi",
-    address: "142 Metro Boulevard",
-    currentWaitMin: 5,
-    crowdLevel: "low",
-    statusLabel: "Not Busy",
-    confidence: 88,
-    reportsCount: 18,
-    updatedAt: Date.now() - 5 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTDQPgKNtEl20kc7u5PlWV2Xu9XoLWiaWqssmU5rUCnLej8scT-d-1M6eVhUaQWLcJBIj2iRSerA_Jgwv3H6HnWUeEOFh4B-KMGZzGJkkNCsix_oAu0850aXDysSQFlygrIUOHp4_8PjzOz4ca3YHieFhI-nkDH-OAk_rYoh7St2P-0jSsnqkyjRN1P5FrVGQWVyXzh6uZ42zcNSsEYwRitIbAZpoN-sHbkkBxksi6P724UIR5dVO9Pg",
-    mapCoords: { xPercent: 28, yPercent: 35 },
-    bestHours: "2 PM - 4 PM",
-    hourlyCrowd: [
-      { hour: "8 AM", densityPercent: 25, level: "low" },
-      { hour: "9 AM", densityPercent: 50, level: "medium" },
-      { hour: "10 AM", densityPercent: 80, level: "high" }, // Morning rush
-      { hour: "11 AM", densityPercent: 65, level: "medium" },
-      { hour: "12 PM", densityPercent: 85, level: "high" }, // Lunch rush
-      { hour: "1 PM", densityPercent: 60, level: "medium" },
-      { hour: "2 PM", densityPercent: 30, level: "low" },
-      { hour: "3 PM", densityPercent: 15, level: "low", isPeakLow: true },
-      { hour: "4 PM", densityPercent: 20, level: "low" },
-      { hour: "5 PM", densityPercent: 45, level: "medium" },
-      { hour: "6 PM", densityPercent: 30, level: "low" },
-      { hour: "7 PM", densityPercent: 15, level: "low" },
-    ],
-    smartAlternative: {
-      id: "place-alt-1",
-      name: "Artisan Grind",
-      distance: "0.1 mi away",
-      expectedWait: "~0m expected wait",
-      savingTimeMin: 10,
-    },
-  },
-  {
-    id: "place-2",
-    name: "Market Fresh",
-    sector: "retail",
-    category: "Grocery Store • Retail",
-    distance: "1.2 mi",
-    address: "88 Grand Avenue",
-    currentWaitMin: 45,
-    crowdLevel: "high",
-    statusLabel: "Very Busy",
-    confidence: 95,
-    reportsCount: 34,
-    updatedAt: Date.now() - 12 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAKL32uzT6-kYVuFrIJuzm0KjnW3qcK6nessKkgeJyjQvOvIva7QegBccOZDbMj0mwmfS5wY22zj59-M03yPFGRsQc1AOUaZaLaefalu7o_HMl8ZeBNpG1G9nSyZ9WDV6s_38MZFL5B7SkpCAwfEhJ813Bf5Hb796dwU4hxWKPDZY8jtVabAf92NM9WWA-H1mQQU8n7JooV1xnN_Gjmfq-0LOSDu4pqr7TDhBHnfIko_9wZxQ_hFIQPuQ",
-    mapCoords: { xPercent: 72, yPercent: 48 },
-    bestHours: "8 AM - 10 AM",
-    hourlyCrowd: [
-      { hour: "8 AM", densityPercent: 20, level: "low", isPeakLow: true },
-      { hour: "9 AM", densityPercent: 35, level: "low" },
-      { hour: "10 AM", densityPercent: 55, level: "medium" },
-      { hour: "11 AM", densityPercent: 85, level: "high" },
-      { hour: "12 PM", densityPercent: 95, level: "high" },
-      { hour: "1 PM", densityPercent: 75, level: "medium" },
-      { hour: "2 PM", densityPercent: 60, level: "medium" },
-      { hour: "3 PM", densityPercent: 50, level: "medium" },
-      { hour: "4 PM", densityPercent: 65, level: "medium" },
-      { hour: "5 PM", densityPercent: 85, level: "high" },
-      { hour: "6 PM", densityPercent: 95, level: "high" }, // Evening rush
-      { hour: "7 PM", densityPercent: 80, level: "high" },
-      { hour: "8 PM", densityPercent: 50, level: "medium" },
-      { hour: "9 PM", densityPercent: 30, level: "low" },
-    ],
-    smartAlternative: {
-      id: "place-alt-2",
-      name: "Green Grocers",
-      distance: "0.2 mi away",
-      expectedWait: "~5m expected wait",
-      savingTimeMin: 40,
-    },
-  },
-  {
-    id: "place-3",
-    name: "Metro Bank Main Branch",
-    sector: "finance",
-    category: "Bank • Finance",
-    distance: "0.5 mi",
-    address: "500 Financial Center",
-    currentWaitMin: 15,
-    crowdLevel: "medium",
-    statusLabel: "Moderate",
-    confidence: 76,
-    reportsCount: 9,
-    updatedAt: Date.now() - 45 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBk0YsgEILvwhJW3aJgM1LmZZ2aDPLohkGzikWr21O-hRx4c-ftPdnHftvzcvIBz-YzSxq9VbxK9MFOIYdBsyVizjT7GSfqOkLRTOIyQ1T6VPi4eye1mCQxID_jXGQys0_2M6lCs6icId3q43Rud2Dfq0D2IjeY0HiYCnoX8CZF4NxpjOb1O0V_C77xGEiQ_p9PqC0O82CUWsgef5wp7wwLYFyVyXS6K8OhmWAPFyye5Afody3Mq3jk8g",
-    mapCoords: { xPercent: 50, yPercent: 65 },
-    bestHours: "9 AM - 10 AM",
-    hourlyCrowd: [
-      { hour: "9 AM", densityPercent: 20, level: "low", isPeakLow: true },
-      { hour: "10 AM", densityPercent: 40, level: "medium" },
-      { hour: "11 AM", densityPercent: 70, level: "medium" },
-      { hour: "12 PM", densityPercent: 90, level: "high" }, // Lunch break rush
-      { hour: "1 PM", densityPercent: 85, level: "high" },
-      { hour: "2 PM", densityPercent: 50, level: "medium" },
-      { hour: "3 PM", densityPercent: 40, level: "medium" },
-      { hour: "4 PM", densityPercent: 30, level: "low" },
-    ],
-  },
-  {
-    id: "place-4",
-    name: "Night Owl Club",
-    sector: "entertainment",
-    category: "Nightclub • Entertainment",
-    distance: "2.1 mi",
-    address: "77 Party Street",
-    currentWaitMin: 0,
-    crowdLevel: "low",
-    statusLabel: "Not Busy",
-    confidence: 90,
-    reportsCount: 45,
-    updatedAt: Date.now() - 2 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAt6e2oFtHWCeEX2SwANKMi34wDfNGLtqPj_x4ZWylP2KhVHVmexCxSpDZtscqX4iBBeXuhwvUHXrdqj_6tuSfwYmzWzqQSGaLD0uGy982jod6T55PfNPI70uxZYd-brF8ll4RtvncdqsnNVHT8rY-2PQGDomjI7HMa6EGa0Vy-fuln14W7ulGmfRy_XcXdpMvCVQ6n47nbbxPyqUlAiloPbACJrQ4iOV0EP4YshHsLQYf1nT9lkC80Lw",
-    mapCoords: { xPercent: 82, yPercent: 30 },
-    bestHours: "8 PM - 10 PM",
-    hourlyCrowd: [
-      { hour: "8 PM", densityPercent: 10, level: "low", isPeakLow: true },
-      { hour: "9 PM", densityPercent: 30, level: "low" },
-      { hour: "10 PM", densityPercent: 75, level: "high" },
-      { hour: "11 PM", densityPercent: 95, level: "high" },
-      { hour: "12 AM", densityPercent: 100, level: "high" },
-      { hour: "1 AM", densityPercent: 80, level: "high" },
-      { hour: "2 AM", densityPercent: 40, level: "medium" },
-    ],
-  },
-  {
-    id: "place-5",
-    name: "Quiet Corner Library",
-    sector: "education", // Custom sector for testing
-    category: "Library • Public",
-    distance: "0.4 mi",
-    address: "1 Bookworm Lane",
-    currentWaitMin: 0,
-    crowdLevel: "low",
-    statusLabel: "Very Quiet",
-    confidence: 99,
-    reportsCount: 5,
-    updatedAt: Date.now() - 120 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTDQPgKNtEl20kc7u5PlWV2Xu9XoLWiaWqssmU5rUCnLej8scT-d-1M6eVhUaQWLcJBIj2iRSerA_Jgwv3H6HnWUeEOFh4B-KMGZzGJkkNCsix_oAu0850aXDysSQFlygrIUOHp4_8PjzOz4ca3YHieFhI-nkDH-OAk_rYoh7St2P-0jSsnqkyjRN1P5FrVGQWVyXzh6uZ42zcNSsEYwRitIbAZpoN-sHbkkBxksi6P724UIR5dVO9Pg",
-    mapCoords: { xPercent: 40, yPercent: 25 },
-    bestHours: "All Day",
-    hourlyCrowd: [
-      { hour: "9 AM", densityPercent: 10, level: "low" },
-      { hour: "12 PM", densityPercent: 15, level: "low" },
-      { hour: "3 PM", densityPercent: 20, level: "low" },
-      { hour: "6 PM", densityPercent: 10, level: "low" },
-    ],
-  },
-  {
-    id: "place-6",
-    name: "Oceanview Resort & Spa",
-    sector: "entertainment",
-    category: "Resort • Entertainment",
-    distance: "1.2 mi",
-    address: "500 Shoreline Drive",
-    currentWaitMin: 15,
-    crowdLevel: "medium",
-    statusLabel: "Moderate",
-    confidence: 70,
-    reportsCount: 8,
-    updatedAt: Date.now() - 30 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAKL32uzT6-kYVuFrIJuzm0KjnW3qcK6nessKkgeJyjQvOvIva7QegBccOZDbMj0mwmfS5wY22zj59-M03yPFGRsQc1AOUaZaLaefalu7o_HMl8ZeBNpG1G9nSyZ9WDV6s_38MZFL5B7SkpCAwfEhJ813Bf5Hb796dwU4hxWKPDZY8jtVabAf92NM9WWA-H1mQQU8n7JooV1xnN_Gjmfq-0LOSDu4pqr7TDhBHnfIko_9wZxQ_hFIQPuQ",
-    mapCoords: { xPercent: 15, yPercent: 75 },
-    bestHours: "8 AM - 10 AM",
-    hourlyCrowd: [
-      { hour: "8 AM", densityPercent: 20, level: "low", isPeakLow: true },
-      { hour: "12 PM", densityPercent: 60, level: "medium" },
-      { hour: "4 PM", densityPercent: 80, level: "high" },
-    ],
-  },
-  {
-    // TEST SCENARIO: Surge Cafe (Historically low, currently high)
-    id: "place-7",
-    name: "Surge Cafe (Test Surge Logic)",
-    sector: "hospitality",
-    category: "Cafe • Hospitality",
-    distance: "0.6 mi",
-    address: "99 Unexpected Ave",
-    currentWaitMin: 45, // Set to high currently
-    crowdLevel: "high", 
-    statusLabel: "Very Busy (Unexpected)",
-    confidence: 90,
-    reportsCount: 12,
-    updatedAt: Date.now() - 15 * 60000,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBTDQPgKNtEl20kc7u5PlWV2Xu9XoLWiaWqssmU5rUCnLej8scT-d-1M6eVhUaQWLcJBIj2iRSerA_Jgwv3H6HnWUeEOFh4B-KMGZzGJkkNCsix_oAu0850aXDysSQFlygrIUOHp4_8PjzOz4ca3YHieFhI-nkDH-OAk_rYoh7St2P-0jSsnqkyjRN1P5FrVGQWVyXzh6uZ42zcNSsEYwRitIbAZpoN-sHbkkBxksi6P724UIR5dVO9Pg",
-    mapCoords: { xPercent: 85, yPercent: 80 },
-    bestHours: "All Day",
-    hourlyCrowd: [
-      { hour: "8 AM", densityPercent: 10, level: "low" },
-      { hour: "12 PM", densityPercent: 15, level: "low" },
-      { hour: "2 PM", densityPercent: 10, level: "low" }, // Historically very low
-      { hour: "6 PM", densityPercent: 20, level: "low" },
-    ],
-  },
-  {
-    // TEST SCENARIO: Missing historical data
-    id: "place-8",
-    name: "City Health Clinic",
-    sector: "hospitality",
-    category: "Healthcare • Hospitality",
-    distance: "0.8 mi",
-    address: "33 Medical Park",
-    currentWaitMin: -1,
-    crowdLevel: "unknown",
-    statusLabel: "Unknown",
-    confidence: 0,
-    reportsCount: 0,
-    updatedAt: null,
-    image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBk0YsgEILvwhJW3aJgM1LmZZ2aDPLohkGzikWr21O-hRx4c-ftPdnHftvzcvIBz-YzSxq9VbxK9MFOIYdBsyVizjT7GSfqOkLRTOIyQ1T6VPi4eye1mCQxID_jXGQys0_2M6lCs6icId3q43Rud2Dfq0D2IjeY0HiYCnoX8CZF4NxpjOb1O0V_C77xGEiQ_p9PqC0O82CUWsgef5wp7wwLYFyVyXS6K8OhmWAPFyye5Afody3Mq3jk8g",
-    mapCoords: { xPercent: 35, yPercent: 55 },
-    bestHours: "Mornings",
-    hourlyCrowd: [], // Empty array tests the fallback logic in our estimation function
-  },
-];
+export const INITIAL_PLACES = [];
+
+// Generates places relative to a user location with exact coordinates & distances (Default: Nilokheri, Karnal)
+export const getPlacesNearLocation = (userLat = 29.8339, userLng = 76.9201) => {
+  const offsets = [
+    { dLat: 0.0035, dLng: 0.0042 },
+    { dLat: -0.0048, dLng: 0.0061 },
+    { dLat: 0.0052, dLng: -0.0039 },
+    { dLat: -0.0061, dLng: -0.0055 },
+    { dLat: 0.0021, dLng: -0.0072 },
+    { dLat: 0.0078, dLng: 0.0031 },
+    { dLat: -0.0029, dLng: 0.0084 },
+    { dLat: -0.0081, dLng: -0.0019 },
+  ];
+
+  return INITIAL_PLACES.map((place, idx) => {
+    const offset = offsets[idx % offsets.length];
+    const lat = userLat + offset.dLat;
+    const lon = userLng + offset.dLng;
+
+    const R = 6371;
+    const dLat = offset.dLat * (Math.PI / 180);
+    const dLon = offset.dLng * (Math.PI / 180);
+    const a = 
+      Math.sin(dLat/2) * Math.sin(dLat/2) +
+      Math.cos(userLat * (Math.PI / 180)) * Math.cos(lat * (Math.PI / 180)) * 
+      Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const rawDistanceKm = R * c;
+    const distanceText = rawDistanceKm < 1 ? `${(rawDistanceKm * 1000).toFixed(0)} m away` : `${rawDistanceKm.toFixed(1)} km away`;
+
+    return {
+      ...place,
+      lat,
+      lon,
+      rawDistanceKm,
+      distance: distanceText,
+    };
+  });
+};
+
