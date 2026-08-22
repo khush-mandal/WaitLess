@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { recommendBestTime } from "../utils/bestTimeRecommendation";
- feature/Best_time_recommendation
 
 // Default 15-hour crowd data matching the UI/UX screenshot (8a to 10p)
 const DEFAULT_HOURLY_CROWD = [
@@ -21,7 +20,6 @@ const DEFAULT_HOURLY_CROWD = [
   { hour: "10 PM", label: "10p", densityPercent: 15, level: "low" }
 ];
 
- main
 export const PlaceDetailsView = ({
   place,
   allPlaces = [],
@@ -39,12 +37,6 @@ export const PlaceDetailsView = ({
       setTimeout(() => setCopiedShare(false), 2000);
     }
   };
- feature/Best_time_recommendation
-  const alternativePlace = place.smartAlternative ? allPlaces.find((p) => p.name.includes("Green") || p.id === place.smartAlternative?.id) : null;
-  const bestTimeRec = recommendBestTime(place.hourlyCrowd);
-
-  return <div className="mesh-bg min-h-screen pt-20 pb-28 px-5">
-
 
   // Ensure hourly crowd has complete 15-hour data
   const hourlyData = (place.hourlyCrowd && place.hourlyCrowd.length >= 8) 
@@ -135,7 +127,6 @@ export const PlaceDetailsView = ({
 
   return (
     <div className="mesh-bg min-h-screen pt-20 pb-28 px-4 sm:px-6">
- main
       <div className="max-w-3xl mx-auto space-y-6">
         
         {/* Top App Bar Navigation */}
@@ -292,27 +283,6 @@ export const PlaceDetailsView = ({
           </div>
         </div>
 
- feature/Best_time_recommendation
-        {
-    /* Crowd Patterns: Hourly Bar Chart */
-  }
-        <div className="glass-card rounded-2xl p-6 animate-slide-up delay-100">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-4 gap-3">
-            <div>
-              <h2 className="text-xl font-bold text-[#00342b]">Crowd by Hour</h2>
-              <div className="mt-1 bg-[#4CAF50]/10 border border-[#4CAF50]/30 rounded-lg p-2.5 inline-block">
-                <p className="text-sm text-[#3f4945]">
-                  Best time to visit:{" "}
-                  <span className="font-bold text-[#4CAF50]">{bestTimeRec.recommendedTime}</span>
-                </p>
-                <div className="flex items-center gap-1 mt-0.5">
-                  <span className={`material-symbols-outlined text-[14px] ${bestTimeRec.confidence === 'high' ? 'text-[#4CAF50]' : bestTimeRec.confidence === 'medium' ? 'text-[#FFC107]' : 'text-[#707975]'}`}>
-                    {bestTimeRec.confidence === 'high' ? 'verified' : bestTimeRec.confidence === 'medium' ? 'info' : 'help'}
-                  </span>
-                  <span className="text-[11px] text-[#707975] font-medium">{bestTimeRec.reason}</span>
-                </div>
-              </div>
-
         {/* Crowd by Hour Card */}
         <div className="glass-card rounded-3xl p-6 shadow-sm border border-white/60 bg-white/70 backdrop-blur-md animate-slide-up delay-100">
           <div className="flex flex-row justify-between items-start mb-6 gap-2">
@@ -321,7 +291,6 @@ export const PlaceDetailsView = ({
               <p className="text-xs sm:text-sm font-semibold text-[#3f4945] mt-1">
                 Best Time: <span className="font-extrabold text-[#006e1c]">{bestTimeDisplay}</span>
               </p>
- main
             </div>
 
             {/* Legend: LOW MED HIGH */}
