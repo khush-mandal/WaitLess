@@ -5,6 +5,8 @@ export const fetchNearbyPlaces = async (lat, lon, radius = 10000) => {
   const query = `[out:json][timeout:15];(node["amenity"~"restaurant|cafe|fast_food|bank|atm|hospital|clinic|pharmacy|cinema|theatre"](around:${radius},${lat},${lon});node["shop"~"supermarket|convenience|clothes|mall"](around:${radius},${lat},${lon});way["amenity"~"restaurant|cafe|fast_food|bank|hospital|clinic|cinema|theatre"](around:${radius},${lat},${lon}););out center 60;`;
 
   const endpoints = [
+    "https://overpass.osm.ch/api/interpreter",
+    "https://maps.mail.ru/osm/tools/overpass/api/interpreter",
     "https://overpass-api.de/api/interpreter",
     "https://overpass.kumi.systems/api/interpreter",
     "https://lz4.overpass-api.de/api/interpreter"
